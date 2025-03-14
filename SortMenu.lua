@@ -88,7 +88,19 @@ function CreateSortMenu()
         return menu
     end
 
+    -- Generate category list menu
     function SortMenu:GenerateCategoryList(componentId)
+        self:SetPedComponentVariation(self.configuration.base, 11, 15, 0, 0) 
+        self:SetPedComponentVariation(self.configuration.base, 8, 15, 0, 0) 
+        self:SetPedComponentVariation(self.configuration.base, 3, 15, 0, 0) 
+        self:SetPedComponentVariation(self.configuration.base, 6, 15, 0, 0) 
+        self:SetPedComponentVariation(self.configuration.base, 4, 15, 0, 0) 
+        self:SetPedComponentVariation(self.configuration.model, 11, 15, 0, 0) 
+        self:SetPedComponentVariation(self.configuration.model, 8, 15, 0, 0) 
+        self:SetPedComponentVariation(self.configuration.model, 3, 15, 0, 0) 
+        self:SetPedComponentVariation(self.configuration.model, 6, 15, 0, 0) 
+        self:SetPedComponentVariation(self.configuration.model, 4, 15, 0, 0) 
+
         local data = self:LoadObjectFromJSONFileCached(self:GetComponentNameResourceFilename(self.configuration.type, componentId))
 
         local menu = MenuV:CreateMenu(nil, nil, "default", "menuv", "unknown")
@@ -135,6 +147,7 @@ function CreateSortMenu()
         end
     end
 
+    -- Get display name of category
     function SortMenu:GetCategoryName(componentId, drawableId)
         local componentId = tostring(componentId)
         local drawableId = tostring(drawableId)
@@ -172,10 +185,11 @@ function CreateSortMenu()
         local paletteId = tonumber(paletteId)
 
         -- Client side
-        SetPedComponentVariation(target.netPed, componentId, drawableId, textureId, paletteId)        
+        --SetPedComponentVariation(target.netPed, componentId, drawableId, textureId, paletteId)        
+
         -- Server side
         TriggerServerEvent('PedComponentSet', target.ped, {componentId= componentId, drawableId= drawableId, textureId= textureId, paletteId= paletteId})
-        print('event.PedComponentSet target=(ped:' .. target.ped .. '|net:' .. target.netPed .. ') componentId=' .. componentId .. ' drawableId=' .. drawableId .. ' textureId=' .. textureId .. ' paletteId=' .. paletteId)
+        --print('event.PedComponentSet target=(ped:' .. target.ped .. '|net:' .. target.netPed .. ') componentId=' .. componentId .. ' drawableId=' .. drawableId .. ' textureId=' .. textureId .. ' paletteId=' .. paletteId)
     end
 
 
