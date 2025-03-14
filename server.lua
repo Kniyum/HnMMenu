@@ -1,69 +1,45 @@
-local MALE_COORDS = vector3(165.8609, -1045.6, 71.73901)
-local FEMALE_COORDS = vector3(168.3367, -1046.453, 71.73901)
+local configuration = {
+    center= vector3(-1758.339, 440.9741, 127.3882),
+    type= 'male',
+    base= {
+        heading= 89.579704284668,
+        vector=  vector3(-1758.2, 442.1954, 127.3639)
+    },
+    model= {
+        heading= 89.579704284668,
+        vector=  vector3(-1758.228, 440.263, 127.3914)
+    }
+}
 
-local male = nil
-local female = nil
+Citizen.CreateThread(function() 
+    print('Thread: running')
+    configuration.base.ped = NetworkGetNetworkIdFromEntity(generateDefaultFrozenModel(configuration.type, configuration.base.vector, configuration.base.heading))
+    configuration.model.ped = NetworkGetNetworkIdFromEntity(generateDefaultFrozenModel(configuration.type, configuration.model.vector, configuration.model.heading))
+end)
 
-Citizen.CreateThread(
-    function() 
-        for _, playerId in ipairs(GetPlayers()) do
-        end
+function generateDefaultFrozenModel(type, vector, heading)
+  local pedType = nil
+  local modelHash = nil
+  if type == 'male' then
+    pedType = 4
+    modelHash = 'mp_m_freemode_01'
+  elseif type =='female' then
+    pedType = 5
+    modelHash = 'mp_f_freemode_01'
+  end
 
-        generateDefaultFrozenMale()
-        generateDefaultFrozenFemale()
-
-        RegisterNetEvent('ResetNPCsEvent')
-        AddEventHandler('ResetNPCsEvent', function() 
-          generateDefaultFrozenMale()
-          generateDefaultFrozenFemale()
-        end)
-    end
-)
-
-
-function generateFrozenNPC(type, modelHash, x, y, z, heading)
-  local npc = CreatePed(type, modelHash, x, y, z, heading, true, false)
+  local npc = CreatePed(pedType, GetHashKey(modelHash), vector.x, vector.y, vector.z,  heading, true, false)
   FreezeEntityPosition(npc)
   return npc
 end
 
-function generateDefaultFrozenMale()
-  if male ~= nil then
-    DeleteEntity(male)
-  end
-
-  male = generateFrozenNPC(4, GetHashKey('mp_m_freemode_01'), MALE_COORDS.x, MALE_COORDS.y, MALE_COORDS.z, 159.79515075684)
-  return male
-end
-
-function generateDefaultFrozenFemale()
-  if female ~= nil then
-    DeleteEntity(female)
-  end
-
-  female = generateFrozenNPC(5, GetHashKey('mp_f_freemode_01'), FEMALE_COORDS.x, FEMALE_COORDS.y, FEMALE_COORDS.z, 154.37631225586)
-  return female
-end
-
 AddEventHandler('playerJoining', function (source)
   print('player.join=' .. source)
-
-  TriggerClientEvent('ConfigurationUpdate', source, { entities={
-      { ped=NetworkGetNetworkIdFromEntity(female), type='female', pos=FEMALE_COORDS },
-      { ped=NetworkGetNetworkIdFromEntity(male), type='male', pos=MALE_COORDS }
-    }
-   })
+  TriggerClientEvent('ConfigurationUpdate', source, configuration)
 end)
 
 RegisterNetEvent('PedComponentSet')
 AddEventHandler('PedComponentSet', function (pedType, data) 
-  local target = nil
-  if pedType == 'female' then
-    target = female
-  elseif pedType == 'male' then
-    target = male
-  end
-
   SetPedComponentVariation(target, componentId, drawableId, textureId, paletteId)
   print('Update ' .. target .. ' componentId=' .. data.componentId .. ' drawableId=' .. data.drawableId .. ' textureId=' .. data.textureId .. ' paletteId=' .. data.paletteId)
 end)

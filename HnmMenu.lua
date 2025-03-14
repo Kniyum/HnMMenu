@@ -49,7 +49,8 @@ function CreateHnmMenu()
                     female = 'strings/female_torsos.json'
                 }
             }
-        }
+        },
+        categories = {}
     }
     
     setmetatable(HnmMenu, {__index = function(t,k) return search(k, arg) end})
@@ -226,9 +227,9 @@ function CreateHnmMenu()
 
         menu:SetTitle(self:GetSubMenuTitle(componentId))
         
-        for i = 0, GetNumberOfPedDrawableVariations(ped, componentId, ''), 1 do
+        for i = 0, 15, 1 do--GetNumberOfPedDrawableVariations(ped, componentId, ''), 1 do
             menu:AddButton({ 
-                label = self:GetDisplayName(ped, data, cmponentId, i, 0),
+                label = self.categories[componentId][i],--self:GetDisplayName(ped, data, cmponentId, i, 0),
                 enter = function () self:SetPedComponentVariation(self.target, componentId, i, 0, 0) end,
                 select = function () self:GenerateComponentDetailMenu(componentId, i):Open() end
             })
@@ -248,6 +249,10 @@ function CreateHnmMenu()
         end
 
         return menu
+    end
+
+    function HnmMenu:Init() 
+        self.categories = self:LoadObjectFromJSONFileCached('config/categories.json')
     end
 
     -- Generate root menu & open

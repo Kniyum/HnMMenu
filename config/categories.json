@@ -1,0 +1,152 @@
+{
+    "11": {
+        "0": { "name": "t-shirt large" },
+        "1": { "name": "t-shirt"},
+        "2": { "name": "sans manche large"},
+        "3": { "name": "veste large ouverte manche longue"},
+        "4": { "name": "veste ouverte manche longue"},
+        "5": { "name": "sans manche"},
+        "6": { "name": "veste entre-ouverte manche longue serré"},
+        "7": { "name": "veste ouverte manche longue 2"},
+        "8": { "name": "maillot manches rmeontées"},
+        "9": { "name": "polo"},
+        "10": { "name": "veste entre-ouverte manche longue"},
+        "11": { "name": "veston"},
+        "12": { "name": "chemise manche longue"},
+        "13": { "name": "chemise manche remontée"},
+        "14": { "name": "maillot manche longue chemise par-dessus"},
+        "15": { "name": "nu"}
+    },
+    "8": {
+        "0": {
+        "name": "",
+        "parents": [3, 4, 6, 7, 10]
+        },
+        "1": {
+        "name": "",
+        "parents": [3, 4, 6, 7, 10]
+        },
+        "2": {
+        "name": "",
+        "parents": [6, 10]
+        },
+        "3": {
+        "name": "",
+        "parents": [3, 4, 6, 7, 10]
+        },
+        "4": {
+        "name": "",
+        "parents": [3, 4, 6, 7, 10]
+        },
+        "5": {
+        "name": "",
+        "parents": [3, 4, 6, 7, 10]
+        },
+        "6": {
+        "name": "",
+        "parents": [11]
+        },
+        "7": {
+        "name": "",
+        "parents": [11]
+        },
+        "8": {
+        "name": "",
+        "parents": [3, 4, 6, 7, 10]
+        },
+        "9": {
+        "name": "",
+        "parents": [3, 4, 10]
+        },
+        "10": {
+        "name": "",
+        "parents": [3, 4, 6, 7, 10]
+        },
+        "11": {
+        "name": "",
+        "parents": [3, 4, 6, 7, 10]
+        },
+        "12": {
+        "name": "",
+        "parents": [3, 4, 6, 7, 10]
+        },
+        "13": {
+        "name": "",
+        "parents": [3, 4, 6, 7, 10]
+        },
+        "14": {
+        "name": "",
+        "parents": [6, 10]
+        },
+        "15": {
+        "name": "",
+        "parents": [15]
+        }
+    },
+    "3": {
+        "0": {
+            "name": "bras semi",
+            "parents": []
+        },
+        "1": {
+            "name": "poignet col serré",
+            "parents": []
+        },
+        "2": {
+            "name": "bras col ouvert",
+            "parents": []
+        },
+        "3": {
+            "name": "Rieng",
+            "parents": []
+        },
+        "4": {
+            "name": "poignet col très serré",
+            "parents": []
+        },
+        "5": {
+            "name": "complet abdomen couvert",
+            "parents": []
+        },
+        "6": {
+            "name": "poignet col v",
+            "parents": []
+        },
+        "7": {
+            "name": "Rieng 2",
+            "parents": []
+        },
+        "8": {
+            "name": "coudes col très serré",
+            "parents": []
+        },
+        "9": {
+            "name": "Rieng 3",
+            "parents": []
+        },
+        "10": {
+            "name": "Rieng 4",
+            "parents": []
+        },
+        "11": {
+            "name": "coude col v",
+            "parents": []
+        },
+        "12": {
+            "name": "poignet col u",
+            "parents": []
+        },
+        "13": {
+            "name": "Rieng 5",
+            "parents": []
+        },
+        "14": {
+            "name": "abdomen ouvert poignet +",
+            "parents": []
+        },
+        "15": {
+            "name": "nu",
+            "parents": [15]
+        }
+    }
+}

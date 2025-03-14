@@ -2,7 +2,8 @@ fx_version 'cerulean'
 game 'gta5'
 
 files {
-    'strings/*.json'
+    'strings/*.json',
+    'config/*.json'
 }
 
 client_scripts {
@@ -12,6 +13,7 @@ client_scripts {
 
     '@menuv/menuv.lua',
 
+    'SortMenu.lua',
     'HnmMenu.lua',
     'client.lua'
 }
