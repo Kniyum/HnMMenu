@@ -7,8 +7,9 @@ function dump(o)
        local s = '{ '
        for k,v in pairs(o) do
           if type(k) ~= 'number' then k = '"'..k..'"' end
-          s = s .. '[#'..k..'] = ' .. dump(v) .. ','
+          s = s ..k..' = ' .. dump(v) .. ', '
        end
+       s = string.sub(s, 1, -2)
        return s .. '} '
     else
        return tostring(o)

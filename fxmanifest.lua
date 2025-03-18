@@ -13,8 +13,8 @@ client_scripts {
 
     '@menuv/menuv.lua',
 
-    'SortMenu.lua',
-    'HnmMenu.lua',
+    --'SortMenu.lua',
+    'HnMMenu.lua',
     'client.lua'
 }
 

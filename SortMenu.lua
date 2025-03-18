@@ -68,6 +68,8 @@ function CreateSortMenu()
 
     function SortMenu:Init()
         self.categories = self:LoadObjectFromJSONFileCached('config/categories.json')
+        -- Save a backup
+        TriggerServerEvent('SaveFileContentLocaly', 'config/categories.backup.json', self.categories)
     end
     
     function SortMenu:Open()
@@ -87,29 +89,64 @@ function CreateSortMenu()
     function SortMenu:GenerateRootMenu()
         local menu = MenuV:CreateMenu('Centre de tri', '', "default", "menuv", "unknown")
 
-        menu:AddButton({ label = 'Gestion des catégories', select = function() self:GenerateMainComponentMenu():Open() end })
-        menu:AddButton({ label = 'Associations des tenues', select = function() end })
+        menu:AddSlider({
+            label= 'Modèle',
+            values= { {label= 'male', value='male'}, {label= 'female', value= 'female'} },
+            value= self.configuration.type,
+            change= function (element, value)
+                menu:Close()
+                TriggerServerEvent('SwitchModel')
+            end
+        })
 
-        return menu
-    end
-
-    function SortMenu:GenerateMainComponentMenu() 
-        local menu = MenuV:CreateMenu('Centre de tri', '', "default", "menuv", "unknown")
-        for k,part in pairs(self.categories) do
-            local componentId = tonumber(k)
-            if self.categories[k].root then
-                menu:AddButton({ label = self:GetSubMenuTitle(componentId), select = function() 
+        menu:AddButton({ label = 'Gestion des catégories', select = function() 
+            self:GenerateComponentMenu({
+                shouldDisplay= function(componentId) 
+                    return self.categories[tostring(componentId)].root
+                end,
+                callback= function(componentId)
                     self:SetVoidPed(self.configuration.base)
                     self:SetVoidPed(self.configuration.model)
                     self:GenerateSelectionMenu({
                         navigationState= SortMenu.MENU_MODE.NAVIGATION_MODE,
                         componentId= componentId,
                     }):Open()
+                end
+            }):Open() 
+        end })
+
+        menu:AddButton({ label = 'Associations des tenues', select = function() self:GenerateComponentMenu({
+            callback= function (componentId) 
+                self:GenerateSwitchingMenu({ componentId= componentId }):Open()
+            end
+        }):Open() end })
+
+        menu:On('Close', function() 
+            
+        end)
+
+        return menu
+    end
+
+    function SortMenu:GenerateComponentMenu(parameters)
+        parameters.callback = parameters.callback or function(cId) end
+        parameters.shouldDisplay = parameters.shouldDisplay or function(cId) return true end
+
+        local menu = MenuV:CreateMenu('Centre de tri', '', "default", "menuv", "unknown")
+
+        for k,part in pairs(self.categories) do
+            local componentId = tonumber(k)
+            if parameters.shouldDisplay(componentId) then
+                menu:AddButton({ label = self:GetSubMenuTitle(componentId), select = function() 
+                    parameters.callback(componentId)
                 end })
             end
         end
+
         return menu
     end
+
+
 
     function SortMenu:GenerateSelectionMenu(parameters)
         parameters.navigationState = parameters.navigationState or SortMenu.MENU_MODE.NAVIGATION_MODE
@@ -138,7 +175,6 @@ function CreateSortMenu()
         end
 
         local obj = nil
-        print('parent: ' .. dump(parameters.parent))
         if parameters.parent then
             if parameters.parent.parent then
                 obj = self.categories[tostring(parameters.parent.componentId)][tostring(parameters.parent.drawableId)].parents[tostring(parameters.parent.parent.drawableId)]
@@ -197,10 +233,43 @@ function CreateSortMenu()
                     enter = function () self:SetPedComponentVariation(self.configuration.model, parameters.componentId, j, 0, 0) end,
                     change = function (item, checked) 
                         addOrRemoveInArray(obj, j, checked)
-                        TriggerServerEvent('SaveFileContentLocaly', 'config/categories.backup.json', self.categories)
+                        TriggerServerEvent('SaveFileContentLocaly', 'config/categories.json', self.categories)
                     end
                 })
             end
+        end
+
+        return menu
+    end
+
+    function SortMenu:GenerateSwitchingMenu(parameters) 
+        self:SetVoidPed(self.configuration.base)
+        self:SetVoidPed(self.configuration.model)
+
+        local menu = MenuV:CreateMenu(nil, nil, "default", "menuv", "unknown")
+
+        local data = self:LoadObjectFromJSONFileCached(self:GetComponentNameResourceFilename('male', parameters.componentId))
+
+        local values = {}
+        for j=0,15,1 do 
+            local category = self.categories[tostring(parameters.componentId)][tostring(j)]
+            table.insert(values, { label= category.name, value=j })
+        end
+        print('values: ' .. dump(values))
+
+        for i=0,15,1 do--GetNumberOfPedDrawableVariations(self.configuration.model.netPed, parameters.componentId),1 do
+            menu:AddSlider({
+                label= self:GetDisplayName(data, parameters.componentId, i, 0),
+                values= values,
+                value=0,
+                enter= function () 
+                    self:SetPedComponentVariation(self.configuration.base, parameters.componentId, 0, 0, 0)
+                    self:SetPedComponentVariation(self.configuration.model, parameters.componentId, i, 0, 0)
+                end,
+                change = function (element, value)
+                    self:SetPedComponentVariation(self.configuration.base, parameters.componentId, value, 0, 0)
+                end
+            })
         end
 
         return menu

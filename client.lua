@@ -1,5 +1,7 @@
-print('---------------------------')
--- tp to NPCs
+print('')
+print('##########################################################')
+local year, month, day, hour, minute, second = GetLocalTime()
+print('## ' .. day .. '-' .. month .. '-' .. year .. ' ' .. hour .. ':' .. minute .. ':' .. second .. ' #############################' )
 function tpToArea()
     local player = PlayerPedId()
     SetEntityCoords(player, -1760.57, 441.308, 127.3721, true, false, false , false)
@@ -7,41 +9,46 @@ function tpToArea()
 end
 RegisterCommand('tp1', function () tpToArea() end)
 
-RegisterNetEvent('ConfigurationUpdate')
-AddEventHandler('ConfigurationUpdate', function (configuration)
-    Citizen.CreateThread(function() 
+
+
+local hnMMenu = CreateHnMMenu()
+
+Citizen.CreateThread(function()
+    while true do 
         Citizen.Wait(1)
-
-        local sortMenu = CreateSortMenu()
-        sortMenu:Init()
-
-        while true do
-            Citizen.Wait(1)
-
+        local configuration = hnMMenu:GetConfiguration()
+        if configuration ~= nil then
             local playerPedId = PlayerPedId()
             local playerCoordinates = GetEntityCoords(playerPedId)
 
             if Vdist2(configuration.center, playerCoordinates) < 50 then
-                if configuration.base.netPed == nil or configuration.base.netPed == 0 then
-                    configuration.base.netPed = NetToEnt(configuration.base.ped)
-                end
-                if configuration.model.netPed == nil or configuration.model.netPed == 0 then
-                    configuration.model.netPed = NetToEnt(configuration.model.ped)
-                end
+                -- Ensure entities have ped ID
+                ensureNetToPed(configuration.model)
+                ensureNetToPed(configuration.target)
 
-                TaskStandStill(configuration.base.netPed, 1000)
-                TaskStandStill(configuration.model.netPed, 1000)
+                -- Force stand still ped
+                TaskHandsUp(configuration.model.ped, 1000, -1, -1, true)
+                TaskHandsUp(configuration.target.ped, 1000, -1, -1, true)
 
                 if Vdist2(configuration.center, playerCoordinates) < 10 then
                     notifyAction('~INPUT_CONTEXT~ pour paramètrer')
 
                     if IsControlJustPressed(1, 38) then
-                        sortMenu:SetConfiguration(configuration)
-                        sortMenu:SetTarget(configuration.model.netPed)
-                        sortMenu:Open()
+                        hnMMenu:Open()
                     end
                 end
             end
         end
-    end)
+    end
+end)
+
+function ensureNetToPed(ped)
+    if ped.ped == nil or ped.ped == 0 then
+        ped.ped = NetToEnt(ped.net)
+    end
+end
+
+RegisterNetEvent('ConfigurationUpdate')
+AddEventHandler('ConfigurationUpdate', function (configuration)
+    hnMMenu:SetConfiguration(configuration)
 end)
