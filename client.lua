@@ -1,7 +1,4 @@
 print('---------------------------')
---local hnmMenu = CreateHnmMenu()
---hnmMenu:Init()
-
 -- tp to NPCs
 function tpToArea()
     local player = PlayerPedId()

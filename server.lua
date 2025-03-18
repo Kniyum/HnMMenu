@@ -44,3 +44,8 @@ AddEventHandler('PedComponentSet', function (target, data)
   SetPedComponentVariation(target, tonumber(data.componentId), tonumber(data.drawableId), tonumber(data.textureId), tonumber(data.paletteId))
   print('Update ' .. target .. ' componentId=' .. data.componentId .. ' drawableId=' .. data.drawableId .. ' textureId=' .. data.textureId .. ' paletteId=' .. data.paletteId)
 end)
+
+RegisterNetEvent('SaveFileContentLocaly')
+AddEventHandler('SaveFileContentLocaly', function (filename, data)
+  SaveJSONFileFromData(filename, data)
+end)
