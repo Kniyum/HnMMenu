@@ -14,6 +14,7 @@ client_scripts {
     '@menuv/menuv.lua',
 
     --'SortMenu.lua',
+    'DataSource.lua',
     'HnMMenu.lua',
     'client.lua'
 }

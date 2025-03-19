@@ -1,5 +1,6 @@
 function CreateHnMMenu()
     local HnMMenu = {
+        dataSource= GetDataSource(),
         menus= {},
         configuration= nil
     }
@@ -52,58 +53,6 @@ function CreateHnMMenu()
         self:SetPedComponentVariation(self.configuration.target.net, 6, 13, 0, 0)
 
         HnMMenu:GetRootMenu():Open()
-    end
-
-    function HnMMenu:GetShops()
-        return { 
-            { label= 'Binco', value= 1 }, 
-            { label= 'Suburban', value= 2 }, 
-            { label= 'Ponsonbys', value= 3 }, 
-            { label= 'Masques', value= 4 }, 
-            { label= 'Sac', value= 5 }, 
-            { label= 'Casino', value= 6 } }
-    end
-
-    function HnMMenu:GetShopCategories(mainCategory) 
-        print('mainCategory: ' .. tostring(mainCategory))
-        if mainCategory == 11 then
-            return { 
-                { label='T-Shirts', value=1 },
-                { label='Polos', value=2 },
-                { label='Manteaux', value=3 },
-                { label='Sweats & Hoodies', value=4 },
-                { label='Costumes', value=5 },
-                { label='Chemises', value=6 },
-                { label='Robes', value=7 },
-                { label='Pulls', value=8 },
-                { label='Déguisements', value=9 },
-                { label='Gilets', value=10 },
-                { label='Vestes', value=11 },
-                { label='Eté', value=12 },
-                { label='Marcels', value=13 }
-            }
-        elseif mainCategory == 4 then
-            return { 
-                { label='Pantalons', value=1 },
-                { label='Shorts', value=1 },
-                { label='Jupes', value=1 },
-                { label='Jeans', value=1 },
-                { label='Déguisements', value=1 },
-                { label='Intérieur', value=1 },
-                { label='Survêtement', value=1 },
-                { label='Maillots de bain', value=1 }
-            }
-        elseif mainCategory == 6 then
-            return { 
-                { label='Sandales', value=1 },
-                { label='Talons', value=1 },
-                { label='Bottes/Bottines', value=1 },
-                { label='Baskets', value=1 },
-                { label='Chaussures plates', value=1 },
-                { label='Déguisements', value=1 },
-                { label='Hiver', value=1 }
-            }
-        end
     end
 
 
@@ -186,7 +135,7 @@ function CreateHnMMenu()
                         title= '',
                         subtitle= '',
                         componentId= parameters.componentId,
-                        drawableid= i
+                        drawableId= i
                     }):Open()
                 end
             })
@@ -209,21 +158,47 @@ function CreateHnMMenu()
         end
         self.menus.componentDetailsMenu:ClearItems()
 
+        local data = {
+            componentId= parameters.componentId,
+            drawableId= parameters.drawableId,
+            textureIds= {},
+            sub= {},
+            shop=1,
+            category=1
+        }
+
+        local collection = GetPedCollectionNameFromDrawable(self.configuration.target.ped, parameters.componentId, parameters.drawableId)
+        for i=0,GetNumberOfPedCollectionTextureVariations(self.configuration.target.ped, parameters.componentId, collection, parameters.drawableId),1 do
+            table.insert(data.textureIds, i)
+        end
+
+        local undershirtCategories = self.dataSource:GetCategories(8)
+        local torsoCategories = self.dataSource:GetCategories(3)
+        for i=0,#undershirtCategories-1,1 do
+            data.sub[tostring(i)] = {}
+
+            for j=0,#torsoCategories-1,1 do
+                table.insert(data.sub[tostring(i)], j)
+            end
+        end
+
         -- Magasin
         self.menus.componentDetailsMenu:AddSlider({
             label= 'Magasin',
-            values= HnMMenu:GetShops(),
+            values= self.dataSource:GetShops(),
+            value= data.shop,
             change= function (element, value) 
-                -- TODO: SetShop()
+                data.shop = value
             end
         })
 
         -- Catégorie magasin
         self.menus.componentDetailsMenu:AddSlider({
             label= 'Catégorie en magasin',
-            values= HnMMenu:GetShopCategories(parameters.componentId),
+            values= self.dataSource:GetShopCategories(parameters.componentId),
+            value= data.category,
             change= function (element, value) 
-                -- TODO: SetShopCategory()
+                data.category = value
             end
         })
 
@@ -233,37 +208,89 @@ function CreateHnMMenu()
             select= function() 
                 self:GetSwitchableSelectionMenu({
                     title= 'Variantes',
-                    subtitle= 'TODO',
-                    componentId= 8,
+                    subtitle= '',
+                    componentId= parameters.componentId,
                     drawableId= parameters.drawableId,
                     currentState= 2,
-                    navigationMode= 2
+                    navigationMode= 2,
+                    GetName= function (index) return 'res_' .. parameters.componentId .. '_' .. parameters.drawableId .. '_' .. index end,
+                    IsChecked= function (index) return arrayContains(data.textureIds, index) end,
+                    enter= function (textureId)
+                        self:SetPedComponentVariation(self.configuration.target.net, parameters.componentId, parameters.drawableId, textureId, 0)
+                    end,
+                    change= function (index, checked) 
+                        if checked then
+                            if not arrayContains(data.textureIds, index) then
+                                table.insert(data.textureIds, index)
+                            end
+                        else
+                            if arrayContains(data.textureIds, index) then
+                                removeTableItem(data.textureIds, index)
+                            end
+                        end
+                    end
                 }):Open()
             end
         })
 
-        -- Catégorie maillots
-        self.menus.componentDetailsMenu:AddButton({
-            label= 'Catégories maillots',
-            select= function() 
-                self:GetSwitchableSelectionMenu({
-                    title= 'Catégories de maillots',
-                    subtitle= 'TODO',
-                    componentId= 8,
-                    drawableId= parameters.drawableId,
-                    currentState= 2,
-                    navigationMode= 3
-                }):Open()
-            end
-        })
+        if parameters.componentId == 11 then
+            -- Catégorie maillots
+            self.menus.componentDetailsMenu:AddButton({
+                label= 'Catégories maillots',
+                select= function() 
+                    self:GetSwitchableSelectionMenu({
+                        title= 'Maillots',
+                        subtitle= '',
+                        namespace='hnm_subcomponent_selection_8',
+                        currentState= 2,
+                        navigationMode= 3,
+                        GetName= function (index) return 'string_cat_8_' .. index end,
+                        IsChecked= function (index) return data.sub[tostring(index)] ~= nil end,
+                        enter= function (index) self:SetPedComponentVariation(self.configuration.target.net, 8, index, 0, 0) end,
+                        change= function (index, checked)
+                            if checked then
+                                data.sub[tostring(index)] = {}
+                            else 
+                                data.sub[tostring(index)] = nil
+                            end
+                        end,
+                        select= function(selection)
+                            self:GetSwitchableSelectionMenu({
+                                title= 'Torses & gants',
+                                subtitle= '',
+                                namespace='hnm_subcomponent_selection_3',
+                                currentState= 2,
+                                navigationMode= 2,
+                                GetName= function (index) return 'string_cat_3_' .. index end,
+                                IsChecked= function (index) return arrayContains(data.sub[tostring(selection)], index) end,
+                                enter= function (index) self:SetPedComponentVariation(self.configuration.target.net, 3, index, 0, 0) end,
+                                change= function (index, checked)
+                                    if checked then
+                                        if not arrayContains(data.sub[tostring(selection)], index) then
+                                            table.insert(data.sub[tostring(selection)], index)
+                                        end
+                                    else
+                                        if arrayContains(data.sub[tostring(selection)], index) then
+                                            removeTableItem(data.sub[tostring(selection)], index)
+                                        end
+                                    end
+                                end,
+                            }):Open()
+                        end
+                    }):Open()
+                end
+            })
+        end
 
 
         self.menus.componentDetailsMenu:AddButton({
             label= 'Enregistrer',
             select= function() 
-                -- TODO: enregistrer en DB
-
-                notifyStatus('Tenue ' .. self:GetDrawableName(parameters.componentId, parameters.drawableId) .. ' enregistrée')
+                if self.dataSource:Update(data) then
+                    notifyStatus('Tenue ' .. self:GetDrawableName(parameters.componentId, parameters.drawableId) .. ' enregistrée')
+                else
+                    notifyStatus('Erreur lors de l\'enregistrement')
+                end
             end
         })
 
@@ -274,81 +301,58 @@ function CreateHnMMenu()
         parameters = parameters or {}
         parameters.title = parameters.title or ''
         parameters.subtitle = parameters.subtitle or ''
-        parameters.namespace = parameters.namespace or 'hnm_subcomponent_selection' 
+        parameters.namespace = parameters.namespace or 'hnm_subcomponent_selection'
+
+        parameters.GetName = parameters.GetName or function(index) return 'res_' end
+        parameters.enter = parameters.enter or function(element) end
+        parameters.select = parameters.select or function(element, value) end
+        parameters.change = parameters.change or function(index, value) end
+        parameters.IsChecked = parameters.IsChecked or function(index) return false end
 
         parameters.navigationMode = parameters.navigationMode or 1
         parameters.currentState = parameters.currentState or 2
 
-        if self.menus.subcomponentDynamicMenu == nil then
-            self.menus.subcomponentDynamicMenu = MenuV:CreateMenu(parameters.title, parameters.subtitle, 'default', 'menuv', parameters.namespace)
+
+        if self.menus['subcomponentDynamicMenu' .. parameters.namespace] == nil then
+            self.menus['subcomponentDynamicMenu' .. parameters.namespace] = MenuV:CreateMenu(parameters.title, parameters.subtitle, 'default', 'menuv', parameters.namespace)
         else
-            self.menus.subcomponentDynamicMenu:SetTitle(parameters.title)
-            self.menus.subcomponentDynamicMenu:SetSubtitle(parameters.subtitle)
+            self.menus['subcomponentDynamicMenu' .. parameters.namespace]:SetTitle(parameters.title)
+            self.menus['subcomponentDynamicMenu' .. parameters.namespace]:SetSubtitle(parameters.subtitle)
         end
-        self.menus.subcomponentDynamicMenu:ClearItems()
+        self.menus['subcomponentDynamicMenu' .. parameters.namespace]:ClearItems()
 
         if parameters.navigationMode == 3 then
-            self.menus.subcomponentDynamicMenu:AddSlider({
+            self.menus['subcomponentDynamicMenu' .. parameters.namespace]:AddSlider({
                 label= 'mode',
                 value = parameters.currentState,
                 values= { { label= 'navigation', value=  1 }, { label= 'sélection', value= 2 } },
                 change = function (element, mode)
                     parameters.currentState = mode
-
-                    self.menus.subcomponentDynamicMenu:Close()
+                    self.menus['subcomponentDynamicMenu' .. parameters.namespace]:Close()
                     self:GetSwitchableSelectionMenu(parameters):Open()
                 end
             })
         end
 
-        --[[local obj = nil
-        if parameters.parent then
-            if parameters.parent.parent then
-                obj = self.categories[tostring(parameters.parent.componentId)][tostring(parameters.parent.drawableId)].parents[tostring(parameters.parent.parent.drawableId)]
-            else
-                obj = self.categories[tostring(parameters.parent.componentId)][tostring(parameters.parent.drawableId)].parents
-            end
-        end]]
-
         for j = 0,15,1 do
             if parameters.currentState == 1 then
-                self.menus.subcomponentDynamicMenu:AddButton({
-                    label= 'category_' .. parameters.componentId .. '_' .. j,
-                    --disabled= obj ~= nil and not arrayContains(obj, j),
-                    enter = function () self:SetPedComponentVariation(self.configuration.model.net, parameters.componentId, j, 0, 0) end,
-                    select = function () 
-                        local data = {
-                            navigationMode= 2,
-                            currentState= 2,
-                            componentId= 3,
-                            parent= {
-                                componentId= 8, 
-                                drawableId= j,
-                                parent= {
-                                    componentId= 11, 
-                                    drawableId= parameters.drawableId
-                                }
-                            }
-                        }
-                        
-                        self:GetSwitchableSelectionMenu(data):Open()
-                    end
+                self.menus['subcomponentDynamicMenu' .. parameters.namespace]:AddButton({
+                    label= parameters.GetName(j),
+                    disabled= not parameters.IsChecked(j),
+                    enter = function () parameters.enter(j) end,
+                    select = function () parameters.select(j) end
                 })
             else 
-                self.menus.subcomponentDynamicMenu:AddCheckbox({
-                    label= 'category_' .. parameters.componentId .. '_' .. j,
-                    value = false, --arrayContains(obj, j),
-                    enter = function () self:SetPedComponentVariation(self.configuration.model.net, parameters.componentId, j, 0, 0) end,
-                    change = function (item, checked) 
-                        --addOrRemoveInArray(obj, j, checked)
-                        --TriggerServerEvent('SaveFileContentLocaly', 'config/categories.json', self.categories)
-                    end
+                self.menus['subcomponentDynamicMenu' .. parameters.namespace]:AddCheckbox({
+                    label= parameters.GetName(j),
+                    value = parameters.IsChecked(j),
+                    enter = function () parameters.enter(j) end,
+                    change = function (elem, checked) parameters.change(j, checked) end
                 })
             end
         end
 
-        return self.menus.subcomponentDynamicMenu
-
+        return self.menus['subcomponentDynamicMenu' .. parameters.namespace]
     end
 
     return HnMMenu
