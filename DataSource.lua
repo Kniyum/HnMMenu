@@ -41,23 +41,23 @@ function GetDataSource()
         elseif mainCategory == 4 then
             return { 
                 { label='Pantalons', value=1 },
-                { label='Shorts', value=1 },
-                { label='Jupes', value=1 },
-                { label='Jeans', value=1 },
-                { label='Déguisements', value=1 },
-                { label='Intérieur', value=1 },
-                { label='Survêtement', value=1 },
-                { label='Maillots de bain', value=1 }
+                { label='Shorts', value=2 },
+                { label='Jupes', value=3 },
+                { label='Jeans', value=4 },
+                { label='Déguisements', value=5 },
+                { label='Intérieur', value=6 },
+                { label='Survêtement', value=7 },
+                { label='Maillots de bain', value=8 }
             }
         elseif mainCategory == 6 then
             return { 
                 { label='Sandales', value=1 },
-                { label='Talons', value=1 },
-                { label='Bottes/Bottines', value=1 },
-                { label='Baskets', value=1 },
-                { label='Chaussures plates', value=1 },
-                { label='Déguisements', value=1 },
-                { label='Hiver', value=1 }
+                { label='Talons', value=2 },
+                { label='Bottes/Bottines', value=3 },
+                { label='Baskets', value=4 },
+                { label='Chaussures plates', value=5 },
+                { label='Déguisements', value=6 },
+                { label='Hiver', value=7 }
             }
         end
     end
@@ -65,41 +65,41 @@ function GetDataSource()
     function DataSource:GetCategories(componentId)
         if componentId == 8 then
             return {
-                [0] = { name= '0' },
-                [1] = { name= '1' },
-                [2] = { name= '2' },
-                [3] = { name= '3' },
-                [4] = { name= '4' },
-                [5] = { name= '5' },
-                [6] = { name= '6' },
-                [7] = { name= '7' },
-                [8] = { name= '8' },
-                [9] = { name= '9' },
-                [10] = { name= '10' },
-                [11] = { name= '11' },
-                [12] = { name= '12' },
-                [13] = { name= '13' },
-                [14] = { name= '14' },
-                [15] = { name= '15' }
+                [1] = { name= '0', value=0 },
+                [2] = { name= '1', value=1 },
+                [3] = { name= '2', value=2 },
+                [4] = { name= '3', value=3 },
+                [5] = { name= '4', value=4 },
+                [6] = { name= '5', value=5 },
+                [7] = { name= '6', value=6 },
+                [8] = { name= '7', value=7 },
+                [9] = { name= '8', value=8 },
+                [10] = { name= '9', value=9 },
+                [11] = { name= '10', value=10 },
+                [12] = { name= '11', value=11 },
+                [13] = { name= '12', value=12 },
+                [14] = { name= '13', value=13 },
+                [15] = { name= '14', value=14 },
+                [16] = { name= '15', value=15 }
             }
         elseif componentId == 3 then
             return {
-                [0] = { name= '0' },
-                [1] = { name= '1' },
-                [2] = { name= '2' },
-                [3] = { name= '3' },
-                [4] = { name= '4' },
-                [5] = { name= '5' },
-                [6] = { name= '6' },
-                [7] = { name= '7' },
-                [8] = { name= '8' },
-                [9] = { name= '9' },
-                [10] = { name= '10' },
-                [11] = { name= '11' },
-                [12] = { name= '12' },
-                [13] = { name= '13' },
-                [14] = { name= '14' },
-                [15] = { name= '15' }
+                [1] = { name= 'Col ouvert + manche courte', value=0 },
+                [2] = { name= 'Col ouvert + main', value=1 },
+                [3] = { name= 'Col v + Sans manche', value=2 },
+                [4] = { name= 'Rieng', value=3 },
+                [5] = { name= 'Col serré + main', value=4 },
+                [6] = { name= 'Bras + torse', value=5 },
+                [7] = { name= 'Col V + mains', value=6 },
+                [8] = { name= 'Rieng', value=7 },
+                [9] = { name= 'Col serré - avant bras', value=8 },
+                [10] = { name= 'Rieng', value=9 },
+                [11] = { name= 'Rieng', value=10 },
+                [12] = { name= 'Col V + manche courte', value=11 },
+                [13] = { name= 'Col ouvert + mains', value=12 },
+                [14] = { name= 'Col normal - sans main', value=13 },
+                [15] = { name= 'Chemise ouverte + mains', value=14 },
+                [16] = { name= 'Tout nu', value=15 }
             }
         else
             return {}
@@ -107,7 +107,7 @@ function GetDataSource()
     end
 
     function DataSource:Update(data)
-        for i=1,#data.textureIds-1,1 do
+        for i=1,#data.textureIds,1 do
             print('{ componentId= '..data.componentId..', \ndrawableId= '..data.drawableId..', \ntextureId= '..data.textureIds[i]..', \nshop= '..data.shop..', \ncategory= '..data.category..', \ndata='..dump(data.sub)..' }')
         end
         --TODO

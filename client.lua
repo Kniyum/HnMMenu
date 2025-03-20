@@ -10,9 +10,7 @@ end
 RegisterCommand('tp1', function () tpToArea() end)
 
 
-
 local hnMMenu = CreateHnMMenu()
-
 Citizen.CreateThread(function()
     while true do 
         Citizen.Wait(1)

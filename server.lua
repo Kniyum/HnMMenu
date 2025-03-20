@@ -7,7 +7,7 @@ local configuration = {
     },
     target= {
         heading= 89.579704284668,
-        vector=  vector3(-1758.228, 440.263, 127.3914)
+        vector=  vector3(-1758.217, 441.145, 127.387)
     }
 }
 
