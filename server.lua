@@ -1,6 +1,6 @@
 local configuration = {
     center= vector3(-1758.339, 440.9741, 127.3882),
-    type= 'male',
+    type= 'female',
     model= {
         heading= 89.579704284668,
         vector=  vector3(-1758.2, 442.1954, 127.3639)
@@ -10,6 +10,8 @@ local configuration = {
         vector=  vector3(-1758.217, 441.145, 127.387)
     }
 }
+
+keyExist({ [3] = { [15] = { 247, 246, 245, 244, 243, 242, 241, 240}}}, 3)
 
 Citizen.CreateThread(function()
     configuration.model.server = generateDefaultFrozenModel(configuration.type, configuration.model.vector, configuration.model.heading)
@@ -33,6 +35,12 @@ function generateDefaultFrozenModel(type, vector, heading)
 
   local npc = CreatePed(pedType, GetHashKey(modelHash), vector.x, vector.y, vector.z,  heading, true, false)
   FreezeEntityPosition(npc)
+  SetPedComponentVariation(npc, 11, 15, 0, 0)
+  SetPedComponentVariation(npc, 8, 15, 0, 0)
+  SetPedComponentVariation(npc, 3, 15, 0, 0)
+  SetPedComponentVariation(npc, 4, 146, 0, 0)
+  SetPedComponentVariation(npc, 6, 120, 0, 0)
+  SetPedComponentVariation(npc, 1, 149, 0, 0)
   return npc
 end
 

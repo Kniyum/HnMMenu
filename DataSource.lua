@@ -1,6 +1,12 @@
 function GetDataSource()
 
-    local DataSource = {}
+    local DataSource = {
+        strings = {},
+        categories = {
+            male= {},
+            female= {}
+        }
+    }
 
     setmetatable(DataSource, {__index = function(t,k) return search(k, arg) end})
     DataSource.__index = DataSource
@@ -19,6 +25,65 @@ function GetDataSource()
             { label= 'Masques', value= 4 }, 
             { label= 'Sac', value= 5 }, 
             { label= 'Casino', value= 6 } }
+    end
+
+    function DataSource:GetComponents()
+        return {
+            [11]= { label= 'Haut', value=11 },
+            [8]= { label= 'Maillot', value=8 },
+            [3]= { label= 'Torse', value=3 },
+            [4]= { label= 'Pantalon', value=4 },
+            [6]= { label= 'Chaussures', value=6 }
+        }
+    end
+
+    function DataSource:GetComponent(componentId)
+        return self:GetComponents()[componentId]
+    end
+
+    function DataSource:GetMainComponents()
+        local array = {}
+        local main = { 11, 4, 6 }
+        for _,key in ipairs(main) do
+            table.insert(array, self:GetComponents()[key])
+        end
+        return array
+    end
+
+    function DataSource:GetSubComponents()
+        local array = {}
+        local main = { 8, 3 }
+        for _,key in ipairs(main) do
+            table.insert(array, self:GetComponents()[key])
+        end
+        return array
+    end
+
+    function DataSource:GetCollectionableComponents()
+        local array = {}
+        local main = { 3 }
+        for _,key in ipairs(main) do
+            table.insert(array, self:GetComponents()[key])
+        end
+        return array
+    end
+
+
+    function DataSource:GetStringsFilename(type) 
+        return 'strings/' .. type .. '.json'
+    end
+
+    function DataSource:GetConfiguration(type)
+        if self.strings[type] == nil then
+            self.strings[type] = LoadObjectFromJSONFile(self:GetStringsFilename(type))
+        end
+
+        return self.strings[type]
+    end
+
+    function DataSource:GetClothesName(type, componentId, drawableId, textureId)
+        local textureId = textureId or 0
+        return self:GetConfiguration(type)[componentId .. '_' .. drawableId .. '_' .. textureId]
     end
 
     function DataSource:GetShopCategories(mainCategory) 
@@ -62,56 +127,126 @@ function GetDataSource()
         end
     end
 
-    function DataSource:GetCategories(componentId)
+    function DataSource:GetCategories(type, componentId)
         if componentId == 8 then
-            return {
-                [1] = { name= '0', value=0 },
-                [2] = { name= '1', value=1 },
-                [3] = { name= '2', value=2 },
-                [4] = { name= '3', value=3 },
-                [5] = { name= '4', value=4 },
-                [6] = { name= '5', value=5 },
-                [7] = { name= '6', value=6 },
-                [8] = { name= '7', value=7 },
-                [9] = { name= '8', value=8 },
-                [10] = { name= '9', value=9 },
-                [11] = { name= '10', value=10 },
-                [12] = { name= '11', value=11 },
-                [13] = { name= '12', value=12 },
-                [14] = { name= '13', value=13 },
-                [15] = { name= '14', value=14 },
-                [16] = { name= '15', value=15 }
-            }
+            if type == 'female' then
+                return {
+                    [1] = { label= 'ouverte - décolleté', value=0 },
+                    [2] = { label= 'semi - décolleté', value=1 },
+                    [3] = { label= 'ouverte - grand décolleté', value=4 },
+                    [4] = { label= 'semi - grand décolleté', value=5 },
+                    [5] = { label= 'ouverte - petit décolleté', value=11 },
+                    [6] = { label= 'ouverte - décolleté plongeant', value=12 },
+                    [7] = { label= 'ouverte - bustier', value=13 },
+                    [8] = { label= 'torse nu', value=15 },
+                    [9] = { label= 'fermé - sans manche', value=32 }
+                    --[10] = { label= '', value=10 },
+                    --[11] = { label= '', value=11 },
+                    --[12] = { label= '', value=12 },
+                    --[13] = { label= '', value=14 },
+                    --[14] = { label= '', value=15 },
+                    --[15] = { label= '', value=31 },
+                    --[16] = { label= '', value=32 }
+                }
+            else
+                return {
+                    [1] = { label= 'ouverte - col fermé', value=0 },
+                    [2] = { label= 'ouverte - col v', value=1 },
+                    [3] = { label= 'semi - col simple', value=2 },
+                    [4] = { label= 'ouverte - col ouvert', value=3 },
+                    [5] = { label= 'ouverte - col fermé', value=4 },
+                    [6] = { label= 'ouverte - col large', value=5 },
+                    [7] = { label= 'veston - col fermé', value=6 },
+                    [8] = { label= 'veston - col ouvert', value=7 },
+                    [9] = { label= 'ouvert - court - col v', value=9 },
+                    [10] = { label= 'ouvert - rentré - col fermé', value=10 },
+                    [11] = { label= 'ouvert - rentré - col ouvert', value=11 },
+                    [12] = { label= 'ouvert - sorti - col ouvert', value=12 },
+                    [13] = { label= 'semi - col v', value=14 },
+                    [14] = { label= 'torse nu', value=15 },
+                    [15] = { label= 'ouvert - rentré - fermé - manchettes', value=31 },
+                    [16] = { label= 'ouvert - rentré - ouvert - manchettes', value=32 }
+                }
+            end
         elseif componentId == 3 then
-            return {
-                [1] = { name= 'Col ouvert + manche courte', value=0 },
-                [2] = { name= 'Col ouvert + main', value=1 },
-                [3] = { name= 'Col v + Sans manche', value=2 },
-                [4] = { name= 'Rieng', value=3 },
-                [5] = { name= 'Col serré + main', value=4 },
-                [6] = { name= 'Bras + torse', value=5 },
-                [7] = { name= 'Col V + mains', value=6 },
-                [8] = { name= 'Rieng', value=7 },
-                [9] = { name= 'Col serré - avant bras', value=8 },
-                [10] = { name= 'Rieng', value=9 },
-                [11] = { name= 'Rieng', value=10 },
-                [12] = { name= 'Col V + manche courte', value=11 },
-                [13] = { name= 'Col ouvert + mains', value=12 },
-                [14] = { name= 'Col normal - sans main', value=13 },
-                [15] = { name= 'Chemise ouverte + mains', value=14 },
-                [16] = { name= 'Tout nu', value=15 }
-            }
+            if type == 'female' then
+                return {
+                    [1] = { label= 'manche courte - col simple', value=0 },
+                    [2] = { label= 'manche longue - col simple', value=1 },
+                    [3] = { label= 'sans manche - col ouvert', value=2 },
+                    [4] = { label= 'manche longue - col serré', value=4 },
+                    [5] = { label= 'bras nu - haut torse', value=5 },
+                    [6] = { label= 'manche longue - col v', value=6 },
+                    [7] = { label= 'manche longue - col serré', value=8 },
+                    [8] = { label= 'manche retroussée - col ouvert', value=11 },
+                    [9] = { label= 'manche longue - col v', value=12 },
+                    [10] = { label= 'manche longue - ouvert', value=14 },
+                    [11] = { label= 'torse nu', value=15 }
+                }
+            else
+                return {
+                    [1] = { label= 'manche courte - col simple', value=0 },
+                    [2] = { label= 'manche longue - col simple', value=1 },
+                    [3] = { label= 'sans manche - col ouvert', value=2 },
+                    [4] = { label= 'manche longue - col serré', value=4 },
+                    [5] = { label= 'bras nu - haut torse', value=5 },
+                    [6] = { label= 'manche longue - col v', value=6 },
+                    [7] = { label= 'manche longue - col serré', value=8 },
+                    [8] = { label= 'manche retroussée - col ouvert', value=11 },
+                    [9] = { label= 'manche longue - col v', value=12 },
+                    [10] = { label= 'manche longue - ouvert', value=14 },
+                    [11] = { label= 'torse nu', value=15 }
+                }
+            end
         else
             return {}
         end
     end
 
-    function DataSource:Update(data)
+    function DataSource:UpdateProduct(data)
         for i=1,#data.textureIds,1 do
-            print('{ componentId= '..data.componentId..', \ndrawableId= '..data.drawableId..', \ntextureId= '..data.textureIds[i]..', \nshop= '..data.shop..', \ncategory= '..data.category..', \ndata='..dump(data.sub)..' }')
+            print('{ \n    componentId= '..data.componentId..', \n    drawableId= '..data.drawableId..', \n    textureId= '..data.textureIds[i]..', \n    shop= '..data.shop..', \n    category= '..data.category..', \n    data='..dump(data.sub)..' \n}')
         end
         --TODO
         return true
+    end
+
+    function DataSource:GetComponentCategories(type, componentId)
+        if self.categories[type][tostring(componentId)] == nil then
+            self.categories[type][tostring(componentId)] = {}
+        end
+
+        return self.categories[type][tostring(componentId)]
+    end
+
+    function DataSource:GetCategoryDrawables(type, componentId, categoryId)
+        local componentCategories = self:GetComponentCategories(type, componentId)
+        if not keyExist(componentCategories, categoryId) then
+            self.categories[type][tostring(componentId)][tostring(categoryId)] = {}
+        end
+
+        return self.categories[type][tostring(componentId)][tostring(categoryId)]
+    end
+
+    function DataSource:UpdateCategory(type, componentId, categoryId, data)
+        if not keyExist(self.categories[type], tostring(componentId)) then
+            self.categories[type][tostring(componentId)] = {}
+        end
+
+        self.categories[type][tostring(componentId)][tostring(categoryId)] = data
+        return true
+    end
+
+    function DataSource:IsDrawableInOtherCategory(type, componentId, categoryId, drawableId)
+        local componentCategories = self:GetComponentCategories(type, componentId)
+        for catId, data in pairs(componentCategories) do
+            if tostring(catId) ~= tostring(categoryId) then
+                if arrayContains(data, drawableId) then
+                    return true
+                end
+            end
+        end
+        return false
     end
 
     return DataSource

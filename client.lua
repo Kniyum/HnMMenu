@@ -2,13 +2,6 @@ print('')
 print('##########################################################')
 local year, month, day, hour, minute, second = GetLocalTime()
 print('## ' .. day .. '-' .. month .. '-' .. year .. ' ' .. hour .. ':' .. minute .. ':' .. second .. ' #############################' )
-function tpToArea()
-    local player = PlayerPedId()
-    SetEntityCoords(player, -1760.57, 441.308, 127.3721, true, false, false , false)
-    SetEntityHeading(player, 269.42758178711)
-end
-RegisterCommand('tp1', function () tpToArea() end)
-
 
 local hnMMenu = CreateHnMMenu()
 Citizen.CreateThread(function()
@@ -27,6 +20,15 @@ Citizen.CreateThread(function()
                 -- Force stand still ped
                 TaskHandsUp(configuration.model.ped, 1000, -1, -1, true)
                 TaskHandsUp(configuration.target.ped, 1000, -1, -1, true)
+
+                SetEntityInvincible(configuration.model.ped, true)
+                SetEntityInvincible(configuration.target.ped, true)
+                
+                SetEntityProofs(configuration.model.ped, true, true, true, true, true, true, 1, true)
+                SetEntityProofs(configuration.target.ped, true, true, true, true, true, true, 1, true)
+
+                SetEntityCompletelyDisableCollision(configuration.model.ped, true, false)
+                SetEntityCompletelyDisableCollision(configuration.target.ped, true, false)
 
                 if Vdist2(configuration.center, playerCoordinates) < 10 then
                     notifyAction('~INPUT_CONTEXT~ pour paramètrer')

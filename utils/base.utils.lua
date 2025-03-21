@@ -9,12 +9,21 @@ function dump(o)
           if type(k) ~= 'number' then k = '"'..k..'"' end
           s = s ..k..' = ' .. dump(v) .. ', '
        end
-       s = string.sub(s, 1, -2)
-       return s .. '} '
+       s = string.sub(s, 1, -3)
+       return string.sub(s .. '} \n', 1, -3)
     else
        return tostring(o)
     end
- end
+end
+
+function keyExist(o, key) 
+   for k,v in pairs(o) do
+      if tostring(k) == tostring(key) then
+         return true
+      end
+   end
+   return false
+end
 
  function removeTableItem(array, item)
    local cursor = -1
