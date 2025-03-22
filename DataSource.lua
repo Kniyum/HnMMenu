@@ -70,7 +70,7 @@ function GetDataSource()
 
 
     function DataSource:GetStringsFilename(type) 
-        return 'strings/' .. type .. '.json'
+        return 'strings/' .. type .. '.fr.json'
     end
 
     function DataSource:GetConfiguration(type)
@@ -139,7 +139,10 @@ function GetDataSource()
                     [6] = { label= 'ouverte - décolleté plongeant', value=12 },
                     [7] = { label= 'ouverte - bustier', value=13 },
                     [8] = { label= 'torse nu', value=15 },
-                    [9] = { label= 'fermé - sans manche', value=32 }
+                    [9] = { label= 'ouverte - sans manche - serré', value=26 },
+                    [9] = { label= 'fermé - sans manche', value=32 },
+                    [9] = { label= 'ouverte - manche courte - fermé', value=38 },
+                    [9] = { label= 'ouverte - manche courte - ouvert', value=37 }
                     --[10] = { label= '', value=10 },
                     --[11] = { label= '', value=11 },
                     --[12] = { label= '', value=12 },

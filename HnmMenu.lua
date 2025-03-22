@@ -108,28 +108,24 @@ function CreateHnMMenu()
 
                             local data = self.dataSource:GetCategoryDrawables(self.configuration.type, componentId, categoryId)
 
-                            local navigation = {
-                                currentState= 2,
-                                navigationMode= 2
-                            }
-                            --[[
-                            if componentId == 3 then
-                                navigation.navigationMode= 3
-                            end]]
+                            local alreadyCategorized = {}
+                            for n=1,#self.dataSource:GetCategories(self.configuration.type, componentId),1 do
+                                table.insert(alreadyCategorized, self.dataSource:GetCategories(self.configuration.type, componentId)[n].value)
+                            end
 
                             local m2 = self:GetSwitchableSelectionMenu({
                                 namespace= 'category_product_selection',
                                 title= self.dataSource:GetCategories(self.configuration.type, componentId)[index].label,
                                 dataCount= GetNumberOfPedDrawableVariations(self.configuration.model.ped, componentId),
-                                currentState= navigation.currentState,
-                                navigationMode= navigation.navigationMode,
+                                currentState= 2,
+                                navigationMode= 2,
                                 GetName= function (index) 
                                     local drawableId = index - 1
                                     return self:GetDrawableName(componentId, drawableId)
                                 end,
                                 filter= function(index) 
                                     local drawableId = index - 1
-                                    return not self.dataSource:IsDrawableInOtherCategory(self.configuration.type, componentId, categoryId, drawableId)
+                                    return not self.dataSource:IsDrawableInOtherCategory(self.configuration.type, componentId, categoryId, drawableId) and not arrayContains(alreadyCategorized, drawableId)
                                 end,
                                 IsChecked= function (index) 
                                     local drawableId = index - 1

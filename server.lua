@@ -1,6 +1,6 @@
 local configuration = {
     center= vector3(-1758.339, 440.9741, 127.3882),
-    type= 'female',
+    type= 'male',
     model= {
         heading= 89.579704284668,
         vector=  vector3(-1758.2, 442.1954, 127.3639)
