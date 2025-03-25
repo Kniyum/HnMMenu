@@ -2,7 +2,7 @@ local SET_COMPONENTS_CLIENT_SIDE = true
 
 function CreateHnMMenu()
     local HnMMenu = {
-        dataSource= GetDataSource(),
+        dataSource= nil,
         menus= {},
         configuration= nil
     }
@@ -25,8 +25,12 @@ function CreateHnMMenu()
         self.configuration = c
     end
 
+    function HnMMenu:SetDataSource(d)
+        self.dataSource = d
+    end
 
-    function HnMMenu:GetDrawableName(componentId, drawableId, textureId) 
+
+    function HnMMenu:GetDrawableName(componentId, drawableId, textureId)
         local textureId = textureId or 0
         return self.dataSource:GetClothesName(self.configuration.type, componentId, drawableId, textureId)
     end
@@ -105,7 +109,6 @@ function CreateHnMMenu()
                             self:SetPedComponentVariation(self.configuration.target, componentId, categoryId, 0, 0) 
                         end,
                         select= function(categoryId, index)
-
                             local data = self.dataSource:GetCategoryDrawables(self.configuration.type, componentId, categoryId)
 
                             local alreadyCategorized = {}
@@ -211,6 +214,8 @@ function CreateHnMMenu()
                                 local drawableId = index - 1
                                 self:SetPedComponentVariation(self.configuration.model, componentId, drawableId, 0, 0)
 
+                                local collection = {}
+
                                 local ids = {}
                                 local count = 20
                                 local starting = drawableId - count
@@ -236,11 +241,28 @@ function CreateHnMMenu()
                                         return drawableId == ids[index] or false -- TODO
                                     end,
                                     enter= function (index)
-                                        local drawableId = index - 1
                                         self:SetPedComponentVariation(self.configuration.target, componentId, ids[index], 0, 0)
                                     end,
+                                    change= function (index, checked)
+                                        local drawableId = ids[index]
+                                        if checked then
+                                            if not arrayContains(collection, drawableId) then
+                                                table.insert(collection, drawableId)
+                                            end
+                                        else
+                                            if arrayContains(collection, drawableId) then
+                                                removeTableItem(collection, drawableId)
+                                            end
+                                        end
+                                    end,
                                     save= function ()
-                                        -- TODO
+                                        if self.dataSource:UpdateCollection(self.configuration.type, componentId, collection) then
+                                            local name = 'sans-titre'
+                                            if #collection > 0 then name = self:GetDrawableName(componentId, collection[0]) end
+                                            notifyStatus('Collection  ' .. name .. ' complétée')
+                                        else
+                                            notifyStatus('Erreur lors de l\'enregistrement')
+                                        end
                                         return true
                                     end
                                 }):Open()
@@ -354,13 +376,15 @@ function CreateHnMMenu()
             table.insert(data.textureIds, textureId)
         end
 
-        local undershirtCategories = self.dataSource:GetCategories(self.configuration.type, 8)
-        local torsoCategories = self.dataSource:GetCategories(self.configuration.type, 3)
-        for i=1,#undershirtCategories,1 do
-            data.sub[tostring(i)] = {}
+        if parameters.componentId == 11 then
+            local undershirtCategories = self.dataSource:GetCategories(self.configuration.type, 8)
+            local torsoCategories = self.dataSource:GetCategories(self.configuration.type, 3)
+            for i=1,#undershirtCategories,1 do
+                data.sub[tostring(i)] = {}
 
-            for j=1,#torsoCategories,1 do
-                table.insert(data.sub[tostring(i)], j)
+                for j=1,#torsoCategories,1 do
+                    table.insert(data.sub[tostring(i)], j)
+                end
             end
         end
 

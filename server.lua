@@ -11,8 +11,6 @@ local configuration = {
     }
 }
 
-keyExist({ [3] = { [15] = { 247, 246, 245, 244, 243, 242, 241, 240}}}, 3)
-
 Citizen.CreateThread(function()
     configuration.model.server = generateDefaultFrozenModel(configuration.type, configuration.model.vector, configuration.model.heading)
     configuration.model.net = NetworkGetNetworkIdFromEntity(configuration.model.server)

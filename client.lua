@@ -1,34 +1,26 @@
-print('')
-print('##########################################################')
-local year, month, day, hour, minute, second = GetLocalTime()
-print('## ' .. day .. '-' .. month .. '-' .. year .. ' ' .. hour .. ':' .. minute .. ':' .. second .. ' #############################' )
-
 local hnMMenu = CreateHnMMenu()
+hnMMenu:SetDataSource(GetDataSource())
+
+RegisterNetEvent('ConfigurationUpdate')
+AddEventHandler('ConfigurationUpdate', function (configuration)
+    hnMMenu:SetConfiguration(configuration)
+end)
+
 Citizen.CreateThread(function()
     while true do 
         Citizen.Wait(1)
+
         local configuration = hnMMenu:GetConfiguration()
         if configuration ~= nil then
             local playerPedId = PlayerPedId()
             local playerCoordinates = GetEntityCoords(playerPedId)
 
             if Vdist2(configuration.center, playerCoordinates) < 50 then
-                -- Ensure entities have ped ID
                 ensureNetToPed(configuration.model)
                 ensureNetToPed(configuration.target)
 
-                -- Force stand still ped
-                TaskHandsUp(configuration.model.ped, 1000, -1, -1, true)
-                TaskHandsUp(configuration.target.ped, 1000, -1, -1, true)
-
-                SetEntityInvincible(configuration.model.ped, true)
-                SetEntityInvincible(configuration.target.ped, true)
-                
-                SetEntityProofs(configuration.model.ped, true, true, true, true, true, true, 1, true)
-                SetEntityProofs(configuration.target.ped, true, true, true, true, true, true, 1, true)
-
-                SetEntityCompletelyDisableCollision(configuration.model.ped, true, false)
-                SetEntityCompletelyDisableCollision(configuration.target.ped, true, false)
+                fixNPC(configuration.model.ped)
+                fixNPC(configuration.target.ped)
 
                 if Vdist2(configuration.center, playerCoordinates) < 10 then
                     notifyAction('~INPUT_CONTEXT~ pour paramètrer')
@@ -42,13 +34,17 @@ Citizen.CreateThread(function()
     end
 end)
 
+function fixNPC(ped)
+    SetEntityProofs(ped, true, true, true, true, true, true, 1, true)
+    FreezeEntityPosition(ped, true)
+    SetEntityInvincible(ped, true)
+    SetBlockingOfNonTemporaryEvents(ped, true)
+    TaskStartScenarioInPlace(ped, "WORLD_HUMAN_COP_IDLES", 0, true)
+    TaskHandsUp(ped, 1000, -1, -1, true)
+end
+
 function ensureNetToPed(ped)
     if ped.ped == nil or ped.ped == 0 then
         ped.ped = NetToEnt(ped.net)
     end
 end
-
-RegisterNetEvent('ConfigurationUpdate')
-AddEventHandler('ConfigurationUpdate', function (configuration)
-    hnMMenu:SetConfiguration(configuration)
-end)

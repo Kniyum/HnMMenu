@@ -70,7 +70,7 @@ function GetDataSource()
 
 
     function DataSource:GetStringsFilename(type) 
-        return 'strings/' .. type .. '.fr.json'
+        return 'strings/' .. type .. '_clothes.json'
     end
 
     function DataSource:GetConfiguration(type)
@@ -82,8 +82,16 @@ function GetDataSource()
     end
 
     function DataSource:GetClothesName(type, componentId, drawableId, textureId)
+        componentId = tostring(componentId)
+        drawableId = tostring(drawableId)
         local textureId = textureId or 0
-        return self:GetConfiguration(type)[componentId .. '_' .. drawableId .. '_' .. textureId]
+    
+        local gxt = self:GetConfiguration(type)[componentId .. '_' .. drawableId .. '_' .. textureId]
+        if gxt == nil or gxt == '' then
+            return 'MISSING.res_' .. componentId .. '_' .. drawableId .. '_' .. textureId
+        end
+
+        return GetLabelText(gxt)
     end
 
     function DataSource:GetShopCategories(mainCategory) 
@@ -140,9 +148,9 @@ function GetDataSource()
                     [7] = { label= 'ouverte - bustier', value=13 },
                     [8] = { label= 'torse nu', value=15 },
                     [9] = { label= 'ouverte - sans manche - serré', value=26 },
-                    [9] = { label= 'fermé - sans manche', value=32 },
-                    [9] = { label= 'ouverte - manche courte - fermé', value=38 },
-                    [9] = { label= 'ouverte - manche courte - ouvert', value=37 }
+                    [10] = { label= 'fermé - sans manche', value=32 },
+                    [11] = { label= 'ouverte - manche courte - fermé', value=38 },
+                    [12] = { label= 'ouverte - manche courte - ouvert', value=37 }
                     --[10] = { label= '', value=10 },
                     --[11] = { label= '', value=11 },
                     --[12] = { label= '', value=12 },
@@ -206,14 +214,6 @@ function GetDataSource()
         end
     end
 
-    function DataSource:UpdateProduct(data)
-        for i=1,#data.textureIds,1 do
-            print('{ \n    componentId= '..data.componentId..', \n    drawableId= '..data.drawableId..', \n    textureId= '..data.textureIds[i]..', \n    shop= '..data.shop..', \n    category= '..data.category..', \n    data='..dump(data.sub)..' \n}')
-        end
-        --TODO
-        return true
-    end
-
     function DataSource:GetComponentCategories(type, componentId)
         if self.categories[type][tostring(componentId)] == nil then
             self.categories[type][tostring(componentId)] = {}
@@ -231,15 +231,6 @@ function GetDataSource()
         return self.categories[type][tostring(componentId)][tostring(categoryId)]
     end
 
-    function DataSource:UpdateCategory(type, componentId, categoryId, data)
-        if not keyExist(self.categories[type], tostring(componentId)) then
-            self.categories[type][tostring(componentId)] = {}
-        end
-
-        self.categories[type][tostring(componentId)][tostring(categoryId)] = data
-        return true
-    end
-
     function DataSource:IsDrawableInOtherCategory(type, componentId, categoryId, drawableId)
         local componentCategories = self:GetComponentCategories(type, componentId)
         for catId, data in pairs(componentCategories) do
@@ -250,6 +241,78 @@ function GetDataSource()
             end
         end
         return false
+    end
+
+
+
+
+    function DataSource:UpdateProduct(data)
+        print('UpdateProduct: data=' .. dump(data))
+        --[[
+        {
+            "componentId": 4,
+            "drawableId": 1,
+
+            -- Enabled textures
+            "textureId": [
+                0,
+                1,
+                -- ...
+            ],
+            
+            -- Shop ID
+            "shop": 1,
+
+            -- Shop category
+            "category": 1,
+
+            -- Assigned sub categoryIds
+            "data": {
+                "1": [
+                    -- Assigned sub² categoryIds to component+sub category
+                    1,
+                    4,
+                    -- ...
+                ],
+                "2": [
+                    2,
+                    4,
+                    5,
+                    -- ...
+                ],
+                -- ...
+            }
+            }
+        ]]
+
+        --TODO
+
+        return true
+    end
+
+    function DataSource:UpdateCategory(type, componentId, categoryId, data)
+        print('UpdateProduct: type=' .. tostring(type) .. ', componentId=' .. tostring(componentId) .. ', categoryId=' .. tostring(categoryId) .. ', data=' .. dump(data))
+        --[[
+            -- drawableIds to assign to componentId+categoryId
+            data: [
+                1,
+                2,
+                -- ...
+            ]
+        ]]
+
+        if not keyExist(self.categories[type], tostring(componentId)) then
+            self.categories[type][tostring(componentId)] = {}
+        end
+        self.categories[type][tostring(componentId)][tostring(categoryId)] = data
+
+        return true
+    end
+
+    function DataSource:UpdateCollection(type, componentId, collection)
+        print('UpdateCollection: type=' .. tostring(type) .. ', componentId=' .. componentId .. ', collection=' .. dump(collection))
+
+        return true
     end
 
     return DataSource

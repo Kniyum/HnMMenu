@@ -2,18 +2,27 @@ function isEmpty(str)
     return str == nil or str == ''
 end
 
-function dump(o)
-    if type(o) == 'table' then
-       local s = '{ '
-       for k,v in pairs(o) do
-          if type(k) ~= 'number' then k = '"'..k..'"' end
-          s = s ..k..' = ' .. dump(v) .. ', '
-       end
-       s = string.sub(s, 1, -3)
-       return string.sub(s .. '} \n', 1, -3)
-    else
-       return tostring(o)
-    end
+function dump(o, ind)
+   ind = ind or 0
+   local indent = ''
+   for i=1,ind do indent = indent .. " " end
+
+   if type(o) == 'table' then
+      local s = indent .. '{ '
+
+      for k,v in pairs(o) do
+         if type(k) ~= 'number' then k = '"'..k..'"' end
+
+         s = s .. '\n' .. indent .. '[' .. k .. ']' ..' = ' .. dump(v, ind + 4) .. ','
+      end
+      if #o > 0 then
+         s = string.sub(s, 1, -1) .. '\n'
+      end
+
+      return s .. indent .. '}'
+   else
+      return tostring(o)
+   end
 end
 
 function keyExist(o, key) 
