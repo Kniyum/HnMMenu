@@ -19,21 +19,21 @@ function GetDataSource()
 
     function DataSource:GetShops()
         return { 
-            { label= 'Binco', value= 1 }, 
-            { label= 'Suburban', value= 2 }, 
-            { label= 'Ponsonbys', value= 3 }, 
-            { label= 'Masques', value= 4 }, 
-            { label= 'Sac', value= 5 }, 
-            { label= 'Casino', value= 6 } }
+            { label= "Binco", value= 1 }, 
+            { label= "Suburban", value= 2 }, 
+            { label= "Ponsonbys", value= 3 }, 
+            { label= "Masques", value= 4 }, 
+            { label= "Sac", value= 5 }, 
+            { label= "Casino", value= 6 } }
     end
 
     function DataSource:GetComponents()
         return {
-            [11]= { label= 'Haut', value=11 },
-            [8]= { label= 'Maillot', value=8 },
-            [3]= { label= 'Torse', value=3 },
-            [4]= { label= 'Pantalon', value=4 },
-            [6]= { label= 'Chaussures', value=6 }
+            [11]= { label= "Haut", value=11 },
+            [8]= { label= "Maillot", value=8 },
+            [3]= { label= "Torse", value=3 },
+            [4]= { label= "Pantalon", value=4 },
+            [6]= { label= "Chaussures", value=6 }
         }
     end
 
@@ -70,7 +70,7 @@ function GetDataSource()
 
 
     function DataSource:GetStringsFilename(type) 
-        return 'strings/' .. type .. '_clothes.json'
+        return "strings/" .. type .. "_clothes.json"
     end
 
     function DataSource:GetConfiguration(type)
@@ -86,9 +86,9 @@ function GetDataSource()
         drawableId = tostring(drawableId)
         local textureId = textureId or 0
     
-        local gxt = self:GetConfiguration(type)[componentId .. '_' .. drawableId .. '_' .. textureId]
-        if gxt == nil or gxt == '' then
-            return 'MISSING.res_' .. componentId .. '_' .. drawableId .. '_' .. textureId
+        local gxt = self:GetConfiguration(type)[componentId .. "_" .. drawableId .. "_" .. textureId]
+        if gxt == nil or gxt == "" then
+            return "MISSING.res_" .. componentId .. "_" .. drawableId .. "_" .. textureId
         end
 
         return GetLabelText(gxt)
@@ -97,116 +97,116 @@ function GetDataSource()
     function DataSource:GetShopCategories(mainCategory) 
         if mainCategory == 11 then
             return { 
-                { label='T-Shirts', value=1 },
-                { label='Polos', value=2 },
-                { label='Manteaux', value=3 },
-                { label='Sweats & Hoodies', value=4 },
-                { label='Costumes', value=5 },
-                { label='Chemises', value=6 },
-                { label='Robes', value=7 },
-                { label='Pulls', value=8 },
-                { label='Déguisements', value=9 },
-                { label='Gilets', value=10 },
-                { label='Vestes', value=11 },
-                { label='Eté', value=12 },
-                { label='Marcels', value=13 }
+                { label="T-Shirts", value=1 },
+                { label="Polos", value=2 },
+                { label="Manteaux", value=3 },
+                { label="Sweats & Hoodies", value=4 },
+                { label="Costumes", value=5 },
+                { label="Chemises", value=6 },
+                { label="Robes", value=7 },
+                { label="Pulls", value=8 },
+                { label="Déguisements", value=9 },
+                { label="Gilets", value=10 },
+                { label="Vestes", value=11 },
+                { label="Eté", value=12 },
+                { label="Marcels", value=13 }
             }
         elseif mainCategory == 4 then
             return { 
-                { label='Pantalons', value=1 },
-                { label='Shorts', value=2 },
-                { label='Jupes', value=3 },
-                { label='Jeans', value=4 },
-                { label='Déguisements', value=5 },
-                { label='Intérieur', value=6 },
-                { label='Survêtement', value=7 },
-                { label='Maillots de bain', value=8 }
+                { label="Pantalons", value=1 },
+                { label="Shorts", value=2 },
+                { label="Jupes", value=3 },
+                { label="Jeans", value=4 },
+                { label="Déguisements", value=5 },
+                { label="Intérieur", value=6 },
+                { label="Survêtement", value=7 },
+                { label="Maillots de bain", value=8 }
             }
         elseif mainCategory == 6 then
             return { 
-                { label='Sandales', value=1 },
-                { label='Talons', value=2 },
-                { label='Bottes/Bottines', value=3 },
-                { label='Baskets', value=4 },
-                { label='Chaussures plates', value=5 },
-                { label='Déguisements', value=6 },
-                { label='Hiver', value=7 }
+                { label="Sandales", value=1 },
+                { label="Talons", value=2 },
+                { label="Bottes/Bottines", value=3 },
+                { label="Baskets", value=4 },
+                { label="Chaussures plates", value=5 },
+                { label="Déguisements", value=6 },
+                { label="Hiver", value=7 }
             }
         end
     end
 
     function DataSource:GetCategories(type, componentId)
         if componentId == 8 then
-            if type == 'female' then
+            if type == "female" then
                 return {
-                    [1] = { label= 'ouverte - décolleté', value=0 },
-                    [2] = { label= 'semi - décolleté', value=1 },
-                    [3] = { label= 'ouverte - grand décolleté', value=4 },
-                    [4] = { label= 'semi - grand décolleté', value=5 },
-                    [5] = { label= 'ouverte - petit décolleté', value=11 },
-                    [6] = { label= 'ouverte - décolleté plongeant', value=12 },
-                    [7] = { label= 'ouverte - bustier', value=13 },
-                    [8] = { label= 'torse nu', value=15 },
-                    [9] = { label= 'ouverte - sans manche - serré', value=26 },
-                    [10] = { label= 'fermé - sans manche', value=32 },
-                    [11] = { label= 'ouverte - manche courte - fermé', value=38 },
-                    [12] = { label= 'ouverte - manche courte - ouvert', value=37 }
-                    --[10] = { label= '', value=10 },
-                    --[11] = { label= '', value=11 },
-                    --[12] = { label= '', value=12 },
-                    --[13] = { label= '', value=14 },
-                    --[14] = { label= '', value=15 },
-                    --[15] = { label= '', value=31 },
-                    --[16] = { label= '', value=32 }
+                    [1] = { label= "ouverte - décolleté", value=0 },
+                    [2] = { label= "semi - décolleté", value=1 },
+                    [3] = { label= "ouverte - grand décolleté", value=4 },
+                    [4] = { label= "semi - grand décolleté", value=5 },
+                    [5] = { label= "ouverte - petit décolleté", value=11 },
+                    [6] = { label= "ouverte - décolleté plongeant", value=12 },
+                    [7] = { label= "ouverte - bustier", value=13 },
+                    [8] = { label= "torse nu", value=15 },
+                    [9] = { label= "ouverte - sans manche - serré", value=26 },
+                    [10] = { label= "fermé - sans manche", value=32 },
+                    [11] = { label= "ouverte - manche courte - fermé", value=38 },
+                    [12] = { label= "ouverte - manche courte - ouvert", value=37 }
+                    --[10] = { label= "", value=10 },
+                    --[11] = { label= "", value=11 },
+                    --[12] = { label= "", value=12 },
+                    --[13] = { label= "", value=14 },
+                    --[14] = { label= "", value=15 },
+                    --[15] = { label= "", value=31 },
+                    --[16] = { label= "", value=32 }
                 }
             else
                 return {
-                    [1] = { label= 'ouverte - col fermé', value=0 },
-                    [2] = { label= 'ouverte - col v', value=1 },
-                    [3] = { label= 'semi - col simple', value=2 },
-                    [4] = { label= 'ouverte - col ouvert', value=3 },
-                    [5] = { label= 'ouverte - col fermé', value=4 },
-                    [6] = { label= 'ouverte - col large', value=5 },
-                    [7] = { label= 'veston - col fermé', value=6 },
-                    [8] = { label= 'veston - col ouvert', value=7 },
-                    [9] = { label= 'ouvert - court - col v', value=9 },
-                    [10] = { label= 'ouvert - rentré - col fermé', value=10 },
-                    [11] = { label= 'ouvert - rentré - col ouvert', value=11 },
-                    [12] = { label= 'ouvert - sorti - col ouvert', value=12 },
-                    [13] = { label= 'semi - col v', value=14 },
-                    [14] = { label= 'torse nu', value=15 },
-                    [15] = { label= 'ouvert - rentré - fermé - manchettes', value=31 },
-                    [16] = { label= 'ouvert - rentré - ouvert - manchettes', value=32 }
+                    [1] = { label= "ouverte - col fermé", value=0 },
+                    [2] = { label= "ouverte - col v", value=1 },
+                    [3] = { label= "semi - col simple", value=2 },
+                    [4] = { label= "ouverte - col ouvert", value=3 },
+                    [5] = { label= "ouverte - col fermé", value=4 },
+                    [6] = { label= "ouverte - col large", value=5 },
+                    [7] = { label= "veston - col fermé", value=6 },
+                    [8] = { label= "veston - col ouvert", value=7 },
+                    [9] = { label= "ouvert - court - col v", value=9 },
+                    [10] = { label= "ouvert - rentré - col fermé", value=10 },
+                    [11] = { label= "ouvert - rentré - col ouvert", value=11 },
+                    [12] = { label= "ouvert - sorti - col ouvert", value=12 },
+                    [13] = { label= "semi - col v", value=14 },
+                    [14] = { label= "torse nu", value=15 },
+                    [15] = { label= "ouvert - rentré - fermé - manchettes", value=31 },
+                    [16] = { label= "ouvert - rentré - ouvert - manchettes", value=32 }
                 }
             end
         elseif componentId == 3 then
-            if type == 'female' then
+            if type == "female" then
                 return {
-                    [1] = { label= 'manche courte - col simple', value=0 },
-                    [2] = { label= 'manche longue - col simple', value=1 },
-                    [3] = { label= 'sans manche - col ouvert', value=2 },
-                    [4] = { label= 'manche longue - col serré', value=4 },
-                    [5] = { label= 'bras nu - haut torse', value=5 },
-                    [6] = { label= 'manche longue - col v', value=6 },
-                    [7] = { label= 'manche longue - col serré', value=8 },
-                    [8] = { label= 'manche retroussée - col ouvert', value=11 },
-                    [9] = { label= 'manche longue - col v', value=12 },
-                    [10] = { label= 'manche longue - ouvert', value=14 },
-                    [11] = { label= 'torse nu', value=15 }
+                    [1] = { label= "manche courte - col simple", value=0 },
+                    [2] = { label= "manche longue - col simple", value=1 },
+                    [3] = { label= "sans manche - col ouvert", value=2 },
+                    [4] = { label= "manche longue - col serré", value=4 },
+                    [5] = { label= "bras nu - haut torse", value=5 },
+                    [6] = { label= "manche longue - col v", value=6 },
+                    [7] = { label= "manche longue - col serré", value=8 },
+                    [8] = { label= "manche retroussée - col ouvert", value=11 },
+                    [9] = { label= "manche longue - col v", value=12 },
+                    [10] = { label= "manche longue - ouvert", value=14 },
+                    [11] = { label= "torse nu", value=15 }
                 }
             else
                 return {
-                    [1] = { label= 'manche courte - col simple', value=0 },
-                    [2] = { label= 'manche longue - col simple', value=1 },
-                    [3] = { label= 'sans manche - col ouvert', value=2 },
-                    [4] = { label= 'manche longue - col serré', value=4 },
-                    [5] = { label= 'bras nu - haut torse', value=5 },
-                    [6] = { label= 'manche longue - col v', value=6 },
-                    [7] = { label= 'manche longue - col serré', value=8 },
-                    [8] = { label= 'manche retroussée - col ouvert', value=11 },
-                    [9] = { label= 'manche longue - col v', value=12 },
-                    [10] = { label= 'manche longue - ouvert', value=14 },
-                    [11] = { label= 'torse nu', value=15 }
+                    [1] = { label= "manche courte - col simple", value=0 },
+                    [2] = { label= "manche longue - col simple", value=1 },
+                    [3] = { label= "sans manche - col ouvert", value=2 },
+                    [4] = { label= "manche longue - col serré", value=4 },
+                    [5] = { label= "bras nu - haut torse", value=5 },
+                    [6] = { label= "manche longue - col v", value=6 },
+                    [7] = { label= "manche longue - col serré", value=8 },
+                    [8] = { label= "manche retroussée - col ouvert", value=11 },
+                    [9] = { label= "manche longue - col v", value=12 },
+                    [10] = { label= "manche longue - ouvert", value=14 },
+                    [11] = { label= "torse nu", value=15 }
                 }
             end
         else
@@ -247,7 +247,7 @@ function GetDataSource()
 
 
     function DataSource:UpdateProduct(data)
-        print('UpdateProduct: data=' .. dump(data))
+        print("UpdateProduct: data=" .. dump(data))
         --[[
         {
             "componentId": 4,
@@ -291,7 +291,7 @@ function GetDataSource()
     end
 
     function DataSource:UpdateCategory(type, componentId, categoryId, data)
-        print('UpdateProduct: type=' .. tostring(type) .. ', componentId=' .. tostring(componentId) .. ', categoryId=' .. tostring(categoryId) .. ', data=' .. dump(data))
+        print("UpdateProduct: type=" .. tostring(type) .. ", componentId=" .. tostring(componentId) .. ", categoryId=" .. tostring(categoryId) .. ", data=" .. dump(data))
         --[[
             -- drawableIds to assign to componentId+categoryId
             data: [
@@ -310,7 +310,7 @@ function GetDataSource()
     end
 
     function DataSource:UpdateCollection(type, componentId, collection)
-        print('UpdateCollection: type=' .. tostring(type) .. ', componentId=' .. componentId .. ', collection=' .. dump(collection))
+        print("UpdateCollection: type=" .. tostring(type) .. ", componentId=" .. componentId .. ", collection=" .. dump(collection))
 
         return true
     end

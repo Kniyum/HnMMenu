@@ -1,29 +1,30 @@
 local hnMMenu = CreateHnMMenu()
 hnMMenu:SetDataSource(GetDataSource())
 
-RegisterNetEvent('ConfigurationUpdate')
-AddEventHandler('ConfigurationUpdate', function (configuration)
-    hnMMenu:SetConfiguration(configuration)
-end)
+local function setConfiguration(c)
+    hnMMenu:SetConfiguration(c)
+end
+RegisterNetEvent("ConfigurationUpdate")
+AddEventHandler("ConfigurationUpdate", setConfiguration)
 
-Citizen.CreateThread(function()
+CreateThread(function()
     while true do 
-        Citizen.Wait(1)
+        Wait(1)
 
         local configuration = hnMMenu:GetConfiguration()
         if configuration ~= nil then
             local playerPedId = PlayerPedId()
             local playerCoordinates = GetEntityCoords(playerPedId)
 
-            if Vdist2(configuration.center, playerCoordinates) < 50 then
+            if #(configuration.center - playerCoordinates) < 50 then
                 ensureNetToPed(configuration.model)
                 ensureNetToPed(configuration.target)
 
                 fixNPC(configuration.model.ped)
                 fixNPC(configuration.target.ped)
 
-                if Vdist2(configuration.center, playerCoordinates) < 10 then
-                    notifyAction('~INPUT_CONTEXT~ pour paramètrer')
+                if #(configuration.center - playerCoordinates) < 10 then
+                    NotifyAction("~INPUT_CONTEXT~ pour paramètrer")
 
                     if IsControlJustPressed(1, 38) then
                         hnMMenu:Open()

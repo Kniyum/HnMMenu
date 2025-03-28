@@ -1,5 +1,3 @@
-local SET_COMPONENTS_CLIENT_SIDE = true
-
 function CreateHnMMenu()
     local HnMMenu = {
         dataSource= nil,
@@ -11,7 +9,7 @@ function CreateHnMMenu()
     HnMMenu.__index = HnMMenu
 
     -- Constructor
-    function HnMMenu:new(o) 
+    function HnMMenu:new(o)
         o = o or {}
         setmetable(o, HnMMenu)
         return o
@@ -37,13 +35,7 @@ function CreateHnMMenu()
 
     -- Apply changes (client & server)
     function HnMMenu:SetPedComponentVariation(target, componentId, drawableId, textureId, paletteId)
-        if SET_COMPONENTS_CLIENT_SIDE then
-            -- Client side
-            SetPedComponentVariation(target.ped, componentId, drawableId, textureId, paletteId)
-        else
-            -- Server side
-            TriggerServerEvent('PedComponentSet', target.net, {componentId= componentId, drawableId= drawableId, textureId= textureId, paletteId= paletteId})
-        end
+        SetPedComponentVariation(target.ped, componentId, drawableId, textureId, paletteId)
     end
 
     function HnMMenu:resetPedComponents(model)
@@ -72,35 +64,35 @@ function CreateHnMMenu()
 
     function HnMMenu:GetRootMenu()
         if self.menus.root == nil then
-            self.menus.root = MenuV:CreateMenu('Centre de tri', '', "default", "menuv", "hnm_root")
+            self.menus.root = MenuV:CreateMenu("Centre de tri", "", "default", "menuv", "hnm_root")
         end
         self.menus.root:ClearItems()
 
-        self.menus.root:AddButton({ label= 'Création vêtement', select= function() 
+        self.menus.root:AddButton({ label= "Création vêtement", select= function() 
             self:GetGenericListMenu({
-                title= 'Création',
-                namespace= 'clothes_creation',
+                title= "Création",
+                namespace= "clothes_creation",
                 data=  self.dataSource:GetMainComponents(),
                 select= function(componentId) 
                     self:GetComponentListMenu({
-                        title= 'Création vêtement',
+                        title= "Création vêtement",
                         subtitle= self.dataSource:GetComponent(componentId).label,
                         componentId= componentId
                     }):Open()
                 end
             }):Open() 
         end })
-        self.menus.root:AddButton({ label= 'Categorisation vêtement', select= function() 
+        self.menus.root:AddButton({ label= "Categorisation vêtement", select= function() 
 
             self:GetGenericListMenu({
-                title= 'Categorisation',
-                namespace= 'clothes_categorization',
+                title= "Categorisation",
+                namespace= "clothes_categorization",
                 data= self.dataSource:GetSubComponents(),
                 select= function(componentId)
 
                     local m = self:GetGenericListMenu({
-                        title= 'Categorisation',
-                        namespace= 'clothes_categories',
+                        title= "Categorisation",
+                        namespace= "clothes_categories",
                         data= self.dataSource:GetCategories(self.configuration.type, componentId),
                         enter= function (categoryId)
                             self:resetPedComponents(self.configuration.model)
@@ -117,7 +109,7 @@ function CreateHnMMenu()
                             end
 
                             local m2 = self:GetSwitchableSelectionMenu({
-                                namespace= 'category_product_selection',
+                                namespace= "category_product_selection",
                                 title= self.dataSource:GetCategories(self.configuration.type, componentId)[index].label,
                                 dataCount= GetNumberOfPedDrawableVariations(self.configuration.model.ped, componentId),
                                 currentState= 2,
@@ -128,11 +120,11 @@ function CreateHnMMenu()
                                 end,
                                 filter= function(index) 
                                     local drawableId = index - 1
-                                    return not self.dataSource:IsDrawableInOtherCategory(self.configuration.type, componentId, categoryId, drawableId) and not arrayContains(alreadyCategorized, drawableId)
+                                    return not self.dataSource:IsDrawableInOtherCategory(self.configuration.type, componentId, categoryId, drawableId) and not ArrayContains(alreadyCategorized, drawableId)
                                 end,
                                 IsChecked= function (index) 
                                     local drawableId = index - 1
-                                    return arrayContains(data, drawableId)
+                                    return ArrayContains(data, drawableId)
                                 end,
                                 enter= function (index)
                                     local drawableId = index - 1
@@ -141,27 +133,27 @@ function CreateHnMMenu()
                                 change= function (index, checked) 
                                     local drawableId = index - 1
                                     if checked then
-                                        if not arrayContains(data, drawableId) then
+                                        if not ArrayContains(data, drawableId) then
                                             table.insert(data, drawableId)
                                         end
                                     else
-                                        if arrayContains(data, drawableId) then
-                                            removeTableItem(data, drawableId)
+                                        if ArrayContains(data, drawableId) then
+                                            RemoveTableItem(data, drawableId)
                                         end
                                     end
                                 end,
                                 save= function() 
                                     if self.dataSource:UpdateCategory(self.configuration.type, componentId, categoryId, data) then
-                                        notifyStatus('Catégorie ' .. self.dataSource:GetCategories(self.configuration.type, componentId)[index].label .. ' complétée')
+                                        notifyStatus("Catégorie " .. self.dataSource:GetCategories(self.configuration.type, componentId)[index].label .. " complétée")
                                     else
-                                        notifyStatus('Erreur lors de l\'enregistrement')
+                                        notifyStatus("Erreur lors de l\'enregistrement")
                                     end
 
                                     return true
                                 end
                             })
 
-                            m2:On('Open', function ()
+                            m2:On("Open", function ()
                                 self:SetPedComponentVariation(self.configuration.target, componentId, categoryId, 0, 0, 0)
                             end)
                             
@@ -170,7 +162,7 @@ function CreateHnMMenu()
                         end
                     })
                     
-                    m:On('Close', function()
+                    m:On("Close", function()
                         self:resetPedComponents(self.configuration.model)
                         self:resetPedComponents(self.configuration.target)
                     end)
@@ -181,11 +173,11 @@ function CreateHnMMenu()
         end })
 
         self.menus.root:AddButton({
-            label= 'Collections',
+            label= "Collections",
             select= function() 
                 self:GetGenericListMenu({
-                    title= 'Création',
-                    namespace= 'collection_components',
+                    title= "Création",
+                    namespace= "collection_components",
                     data=  self.dataSource:GetCollectionableComponents(),
                     select= function(componentId) 
 
@@ -227,7 +219,7 @@ function CreateHnMMenu()
                                 end
 
                                 self:GetSwitchableSelectionMenu({
-                                    namespace= 'glove_collection_selection',
+                                    namespace= "glove_collection_selection",
                                     title= self:GetDrawableName(componentId, drawableId),
                                     dataCount= #ids,
                                     currentState= 2,
@@ -246,22 +238,22 @@ function CreateHnMMenu()
                                     change= function (index, checked)
                                         local drawableId = ids[index]
                                         if checked then
-                                            if not arrayContains(collection, drawableId) then
+                                            if not ArrayContains(collection, drawableId) then
                                                 table.insert(collection, drawableId)
                                             end
                                         else
-                                            if arrayContains(collection, drawableId) then
-                                                removeTableItem(collection, drawableId)
+                                            if ArrayContains(collection, drawableId) then
+                                                RemoveTableItem(collection, drawableId)
                                             end
                                         end
                                     end,
                                     save= function ()
                                         if self.dataSource:UpdateCollection(self.configuration.type, componentId, collection) then
-                                            local name = 'sans-titre'
+                                            local name = "sans-titre"
                                             if #collection > 0 then name = self:GetDrawableName(componentId, collection[0]) end
-                                            notifyStatus('Collection  ' .. name .. ' complétée')
+                                            notifyStatus("Collection  " .. name .. " complétée")
                                         else
-                                            notifyStatus('Erreur lors de l\'enregistrement')
+                                            notifyStatus("Erreur lors de l\'enregistrement")
                                         end
                                         return true
                                     end
@@ -279,15 +271,15 @@ function CreateHnMMenu()
 
     function HnMMenu:GetGenericListMenu(parameters)
         parameters = parameters or {}
-        parameters.title = parameters.title or ''
-        parameters.subtitle = parameters.subtitle or ''
-        parameters.namespace = parameters.namespace or 'hnm_generic'
+        parameters.title = parameters.title or ""
+        parameters.subtitle = parameters.subtitle or ""
+        parameters.namespace = parameters.namespace or "hnm_generic"
         parameters.data = parameters.data or {}
         parameters.enter = parameters.enter or function(value, index) end
         parameters.select = parameters.select or function(value, index) end
 
         if self.menus[parameters.namespace] == nil then
-            self.menus[parameters.namespace] = MenuV:CreateMenu(parameters.title, parameters.subtitle, 'default', 'menuv', parameters.namespace)
+            self.menus[parameters.namespace] = MenuV:CreateMenu(parameters.title, parameters.subtitle, "default", "menuv", parameters.namespace)
         else
             self.menus[parameters.namespace]:SetTitle(parameters.title)
             self.menus[parameters.namespace]:SetSubtitle(parameters.subtitle)
@@ -307,12 +299,12 @@ function CreateHnMMenu()
 
     function HnMMenu:GetComponentListMenu(parameters)
         parameters = parameters or {}
-        parameters.title = parameters.title or ''
-        parameters.subtitle = parameters.subtitle or ''
-        parameters.namespace = parameters.namespace or 'hnm_component_list'
+        parameters.title = parameters.title or ""
+        parameters.subtitle = parameters.subtitle or ""
+        parameters.namespace = parameters.namespace or "hnm_component_list"
 
         if self.menus.componentListMenu == nil then
-            self.menus.componentListMenu = MenuV:CreateMenu(parameters.title, parameters.subtitle, 'default', 'menuv', parameters.namespace)
+            self.menus.componentListMenu = MenuV:CreateMenu(parameters.title, parameters.subtitle, "default", "menuv", parameters.namespace)
         else
             self.menus.componentListMenu:SetTitle(parameters.title)
             self.menus.componentListMenu:SetSubtitle(parameters.subtitle)
@@ -337,7 +329,7 @@ function CreateHnMMenu()
             })
         end
 
-        self.menus.componentListMenu:On('Close', function ()
+        self.menus.componentListMenu:On("Close", function ()
             self:resetPedComponents(self.configuration.model)
             self:resetPedComponents(self.configuration.target)
         end)
@@ -347,12 +339,12 @@ function CreateHnMMenu()
 
     function HnMMenu:GetMainComponentMenu(parameters)
         parameters = parameters or {}
-        parameters.title = parameters.title or ''
-        parameters.subtitle = parameters.subtitle or ''
-        parameters.namespace = parameters.namespace or 'hnm_component_details'
+        parameters.title = parameters.title or ""
+        parameters.subtitle = parameters.subtitle or ""
+        parameters.namespace = parameters.namespace or "hnm_component_details"
 
         if self.menus.componentDetailsMenu == nil then
-            self.menus.componentDetailsMenu = MenuV:CreateMenu(parameters.title, parameters.subtitle, 'default', 'menuv', parameters.namespace)
+            self.menus.componentDetailsMenu = MenuV:CreateMenu(parameters.title, parameters.subtitle, "default", "menuv", parameters.namespace)
         else
             self.menus.componentDetailsMenu:SetTitle(parameters.title)
             self.menus.componentDetailsMenu:SetSubtitle(parameters.subtitle)
@@ -390,7 +382,7 @@ function CreateHnMMenu()
 
         -- Shop
         self.menus.componentDetailsMenu:AddSlider({
-            label= 'Magasin',
+            label= "Magasin",
             values= self.dataSource:GetShops(),
             value= data.shop,
             change= function (element, value) 
@@ -400,7 +392,7 @@ function CreateHnMMenu()
 
         -- Shop category
         self.menus.componentDetailsMenu:AddSlider({
-            label= 'Catégorie en magasin',
+            label= "Catégorie en magasin",
             values= self.dataSource:GetShopCategories(parameters.componentId),
             value= data.category,
             change= function (element, value) 
@@ -410,10 +402,10 @@ function CreateHnMMenu()
 
         -- Variations
         self.menus.componentDetailsMenu:AddButton({
-            label= 'Variantes',
+            label= "Variantes",
             select= function() 
                 local m = self:GetSwitchableSelectionMenu({
-                    title= 'Variantes',
+                    title= "Variantes",
                     componentId= parameters.componentId,
                     drawableId= parameters.drawableId,
                     dataCount= textureCount,
@@ -425,7 +417,7 @@ function CreateHnMMenu()
                     end,
                     IsChecked= function (index) 
                         local textureId = index - 1
-                        return arrayContains(data.textureIds, textureId) 
+                        return ArrayContains(data.textureIds, textureId) 
                     end,
                     enter= function (index)
                         local textureId = index - 1
@@ -434,18 +426,18 @@ function CreateHnMMenu()
                     change= function (index, checked) 
                         local textureId = index - 1
                         if checked then
-                            if not arrayContains(data.textureIds, textureId) then
+                            if not ArrayContains(data.textureIds, textureId) then
                                 table.insert(data.textureIds, textureId)
                             end
                         else
-                            if arrayContains(data.textureIds, textureId) then
-                                removeTableItem(data.textureIds, textureId)
+                            if ArrayContains(data.textureIds, textureId) then
+                                RemoveTableItem(data.textureIds, textureId)
                             end
                         end
                     end
                 })
 
-                m:On('Close', function() 
+                m:On("Close", function() 
                     -- Reset to initial textureId
                     self:SetPedComponentVariation(self.configuration.target, parameters.componentId, parameters.drawableId, 0, 0)
                 end)
@@ -457,12 +449,12 @@ function CreateHnMMenu()
         if parameters.componentId == 11 then
             -- Undershirt categories
             self.menus.componentDetailsMenu:AddButton({
-                label= 'Catégories maillots',
+                label= "Catégories maillots",
                 select= function() 
                     self:GetSwitchableSelectionMenu({
                         title= self.dataSource:GetComponents()[8].label,
                         dataCount= #self.dataSource:GetCategories(self.configuration.type, 8),
-                        namespace='hnm_subcomponent_selection_8',
+                        namespace="hnm_subcomponent_selection_8",
                         currentState= 2,
                         navigationMode= 3,
                         GetName= function (index) return self.dataSource:GetCategories(self.configuration.type, 8)[index].label end,
@@ -482,29 +474,29 @@ function CreateHnMMenu()
                             local m = self:GetSwitchableSelectionMenu({
                                 title= self.dataSource:GetComponents()[3].label,
                                 dataCount= #self.dataSource:GetCategories(self.configuration.type, 3),
-                                namespace='hnm_subcomponent_selection_3',
+                                namespace="hnm_subcomponent_selection_3",
                                 currentState= 2,
                                 navigationMode= 2,
                                 GetName= function (index) return self.dataSource:GetCategories(self.configuration.type, 3)[index].label end,
-                                IsChecked= function (index) return arrayContains(data.sub[tostring(selection)], index) end,
+                                IsChecked= function (index) return ArrayContains(data.sub[tostring(selection)], index) end,
                                 enter= function (index) 
                                     local drawableId = self.dataSource:GetCategories(self.configuration.type, 3)[index].value
                                     self:SetPedComponentVariation(self.configuration.target, 3, drawableId, 0, 0) 
                                 end,
                                 change= function (index, checked)
                                     if checked then
-                                        if not arrayContains(data.sub[tostring(selection)], index) then
+                                        if not ArrayContains(data.sub[tostring(selection)], index) then
                                             table.insert(data.sub[tostring(selection)], index)
                                         end
                                     else
-                                        if arrayContains(data.sub[tostring(selection)], index) then
-                                            removeTableItem(data.sub[tostring(selection)], index)
+                                        if ArrayContains(data.sub[tostring(selection)], index) then
+                                            RemoveTableItem(data.sub[tostring(selection)], index)
                                         end
                                     end
                                 end,
                             })
                             
-                            m:On('Close', function () 
+                            m:On("Close", function () 
                                 self:SetPedComponentVariation(self.configuration.target, 3, 13, 0, 0)
                             end)
 
@@ -517,17 +509,17 @@ function CreateHnMMenu()
 
 
         self.menus.componentDetailsMenu:AddButton({
-            label= 'Enregistrer',
+            label= "Enregistrer",
             select= function() 
                 if self.dataSource:UpdateProduct(data) then
-                    notifyStatus('Tenue ' .. self:GetDrawableName(parameters.componentId, parameters.drawableId) .. ' enregistrée')
+                    notifyStatus("Tenue " .. self:GetDrawableName(parameters.componentId, parameters.drawableId) .. " enregistrée")
                 else
-                    notifyStatus('Erreur lors de l\'enregistrement')
+                    notifyStatus("Erreur lors de l\'enregistrement")
                 end
             end
         })
 
-        self.menus.componentDetailsMenu:On('Open', function () 
+        self.menus.componentDetailsMenu:On("Open", function () 
             self:SetPedComponentVariation(self.configuration.model, 8, 15, 0, 0)
             self:SetPedComponentVariation(self.configuration.model, 3, 13, 0, 0)
             
@@ -540,11 +532,11 @@ function CreateHnMMenu()
 
     function HnMMenu:GetSwitchableSelectionMenu(parameters)
         parameters = parameters or {}
-        parameters.title = parameters.title or ''
-        parameters.subtitle = parameters.subtitle or ''
-        parameters.namespace = parameters.namespace or 'hnm_subcomponent_selection'
+        parameters.title = parameters.title or ""
+        parameters.subtitle = parameters.subtitle or ""
+        parameters.namespace = parameters.namespace or "hnm_subcomponent_selection"
 
-        parameters.GetName = parameters.GetName or function(index) return 'res_' end
+        parameters.GetName = parameters.GetName or function(index) return "res_" end
         parameters.enter = parameters.enter or function(element) end
         parameters.select = parameters.select or function(element, value) end
         parameters.change = parameters.change or function(index, value) end
@@ -557,22 +549,22 @@ function CreateHnMMenu()
         parameters.currentState = parameters.currentState or 2
 
 
-        if self.menus['subcomponentDynamicMenu' .. parameters.namespace] == nil then
-            self.menus['subcomponentDynamicMenu' .. parameters.namespace] = MenuV:CreateMenu(parameters.title, parameters.subtitle, 'default', 'menuv', parameters.namespace)
+        if self.menus["subcomponentDynamicMenu" .. parameters.namespace] == nil then
+            self.menus["subcomponentDynamicMenu" .. parameters.namespace] = MenuV:CreateMenu(parameters.title, parameters.subtitle, "default", "menuv", parameters.namespace)
         else
-            self.menus['subcomponentDynamicMenu' .. parameters.namespace]:SetTitle(parameters.title)
-            self.menus['subcomponentDynamicMenu' .. parameters.namespace]:SetSubtitle(parameters.subtitle)
+            self.menus["subcomponentDynamicMenu" .. parameters.namespace]:SetTitle(parameters.title)
+            self.menus["subcomponentDynamicMenu" .. parameters.namespace]:SetSubtitle(parameters.subtitle)
         end
-        self.menus['subcomponentDynamicMenu' .. parameters.namespace]:ClearItems()
+        self.menus["subcomponentDynamicMenu" .. parameters.namespace]:ClearItems()
 
         if parameters.navigationMode == 3 then
-            self.menus['subcomponentDynamicMenu' .. parameters.namespace]:AddSlider({
-                label= 'mode',
+            self.menus["subcomponentDynamicMenu" .. parameters.namespace]:AddSlider({
+                label= "mode",
                 value = parameters.currentState,
-                values= { { label= 'navigation', value=  1 }, { label= 'sélection', value= 2 } },
+                values= { { label= "navigation", value=  1 }, { label= "sélection", value= 2 } },
                 change = function (element, mode)
                     parameters.currentState = mode
-                    self.menus['subcomponentDynamicMenu' .. parameters.namespace]:Close()
+                    self.menus["subcomponentDynamicMenu" .. parameters.namespace]:Close()
                     self:GetSwitchableSelectionMenu(parameters):Open()
                 end
             })
@@ -581,14 +573,14 @@ function CreateHnMMenu()
         for j=1,parameters.dataCount,1 do
             if parameters.filter(j) then
                 if parameters.currentState == 1 then
-                    self.menus['subcomponentDynamicMenu' .. parameters.namespace]:AddButton({
+                    self.menus["subcomponentDynamicMenu" .. parameters.namespace]:AddButton({
                         label= parameters.GetName(j),
                         disabled= not parameters.IsChecked(j),
                         enter = function () parameters.enter(j) end,
                         select = function () parameters.select(j) end
                     })
                 else 
-                    self.menus['subcomponentDynamicMenu' .. parameters.namespace]:AddCheckbox({
+                    self.menus["subcomponentDynamicMenu" .. parameters.namespace]:AddCheckbox({
                         label= parameters.GetName(j),
                         value = parameters.IsChecked(j),
                         disabled= parameters.IsDisabled(j),
@@ -600,17 +592,17 @@ function CreateHnMMenu()
         end
 
         if parameters.save ~= nil then
-            self.menus['subcomponentDynamicMenu' .. parameters.namespace]:AddButton({
-                label= 'Enregistrer',
+            self.menus["subcomponentDynamicMenu" .. parameters.namespace]:AddButton({
+                label= "Enregistrer",
                 select= function() 
                     if parameters.save() then
-                        self.menus['subcomponentDynamicMenu' .. parameters.namespace]:Close()
+                        self.menus["subcomponentDynamicMenu" .. parameters.namespace]:Close()
                     end
                 end
             })
         end
 
-        return self.menus['subcomponentDynamicMenu' .. parameters.namespace]
+        return self.menus["subcomponentDynamicMenu" .. parameters.namespace]
     end
 
     return HnMMenu

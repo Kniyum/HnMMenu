@@ -1,31 +1,31 @@
-function isEmpty(str) 
-    return str == nil or str == ''
+function IsEmpty(str) 
+    return str == nil or str == ""
 end
 
-function dump(o, ind)
+function Dump(o, ind)
    ind = ind or 0
-   local indent = ''
+   local indent = ""
    for i=1,ind do indent = indent .. " " end
 
-   if type(o) == 'table' then
-      local s = indent .. '{ '
+   if type(o) == "table" then
+      local s = indent .. "{ "
 
       for k,v in pairs(o) do
-         if type(k) ~= 'number' then k = '"'..k..'"' end
+         if type(k) ~= "number" then k = "\""..k.."\"" end
 
-         s = s .. '\n' .. indent .. '[' .. k .. ']' ..' = ' .. dump(v, ind + 4) .. ','
+         s = s .. "\n" .. indent .. "[" .. k .. "]" .." = " .. dump(v, ind + 4) .. ","
       end
       if #o > 0 then
-         s = string.sub(s, 1, -1) .. '\n'
+         s = string.sub(s, 1, -1) .. "\n"
       end
 
-      return s .. indent .. '}'
+      return s .. indent .. "}"
    else
       return tostring(o)
    end
 end
 
-function keyExist(o, key) 
+function KeyExist(o, key) 
    for k,v in pairs(o) do
       if tostring(k) == tostring(key) then
          return true
@@ -34,7 +34,7 @@ function keyExist(o, key)
    return false
 end
 
- function removeTableItem(array, item)
+ function RemoveTableItem(array, item)
    local cursor = -1
    for i=1,#array,1 do 
       if array[i] == item then
@@ -48,12 +48,11 @@ end
    end
  end
 
- function arrayContains(tab, val)
+ function ArrayContains(tab, val)
    for index, value in ipairs(tab) do
        if value == val then
            return true
        end
    end
-
    return false
 end
